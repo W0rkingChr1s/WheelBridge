@@ -1,0 +1,6 @@
+# Unix-Zeilenenden erzwingen – sonst bricht "curl ... | bash" bei Checkouts/Pushes von Windows
+* text=auto eol=lf
+*.sh text eol=lf
+scripts/wheelbridge text eol=lf
+*.png binary
+*.ico binary

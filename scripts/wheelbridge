@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# WheelBridge – Kommandozeile
+set -euo pipefail
+
+DIR="${WB_DIR:-/opt/wheelbridge}"
+CONF="${WB_CONF:-/etc/wheelbridge/config.toml}"
+STATE="${WB_STATE:-/var/lib/wheelbridge}"
+SVC="wheelbridge"
+
+cmd="${1:-help}"
+
+# Befehle, die root brauchen, laufen automatisch über sudo
+case "$cmd" in
+  start|stop|restart|run|sniff|probe|config|reset|update|uninstall)
+    [[ $EUID -eq 0 ]] || exec sudo -E "$0" "$@" ;;
+esac
+shift || true
+
+port() { sed -nE 's/^port[[:space:]]*=[[:space:]]*([0-9]+).*/\1/p' "$CONF" 2>/dev/null | head -1; }
+
+stop_service_for_foreground() {
+  if systemctl is-active -q "$SVC" 2>/dev/null; then
+    echo "Dienst läuft – wird für den Vordergrundbetrieb gestoppt (danach: wheelbridge start)."
+    systemctl stop "$SVC"
+  fi
+}
+
+run_installer() {  # Kopie ausführen, weil der Installer $DIR ersetzt
+  local tmp; tmp="$(mktemp /tmp/wheelbridge-install.XXXXXX.sh)"
+  cp "$DIR/install.sh" "$tmp"
+  local rc=0
+  bash "$tmp" "$@" || rc=$?
+  rm -f "$tmp"; return $rc
+}
+
+case "$cmd" in
+  start|stop|restart)
+    systemctl "$cmd" "$SVC"; { systemctl --no-pager -n 0 status "$SVC" | head -3; } || true ;;
+  status)
+    systemctl --no-pager status "$SVC" ;;
+  logs)
+    journalctl -u "$SVC" -n 200 -f ;;
+  run)
+    stop_service_for_foreground
+    exec python3 "$DIR/bridge/main.py" -c "$CONF" --settings "$STATE/settings.json" "$@" ;;
+  sniff)
+    out="${1:-/tmp/wheelbridge-gip.log}"; [[ $# -gt 0 ]] && shift
+    stop_service_for_foreground
+    echo "Protokolliere GIP-Pakete nach $out (Strg+C beendet)"
+    exec python3 "$DIR/bridge/main.py" -c "$CONF" --settings "$STATE/settings.json" --sniff "$out" "$@" ;;
+  probe)
+    stop_service_for_foreground
+    exec python3 "$DIR/bridge/probe.py" "$@" ;;
+  doctor)
+    exec bash "$DIR/scripts/doctor.sh" ;;
+  url)
+    p="$(port)"; p="${p:-8080}"
+    for ip in $(hostname -I 2>/dev/null); do [[ $ip == *.* ]] && echo "http://$ip:$p"; done
+    echo "http://$(hostname).local:$p" ;;
+  config)
+    "${EDITOR:-nano}" "$CONF"
+    echo "Übernehmen mit: wheelbridge restart" ;;
+  reset)
+    rm -f "$STATE/settings.json"
+    echo "Dashboard-Einstellungen gelöscht – es gilt wieder $CONF."
+    systemctl is-active -q "$SVC" && systemctl restart "$SVC" || true ;;
+  update)
+    run_installer --update "$@" ;;
+  uninstall)
+    run_installer --uninstall "$@" ;;
+  version|--version|-v)
+    echo "WheelBridge $(cat "$DIR/VERSION" 2>/dev/null || echo '?')"
+    git -C "$DIR" log -1 --format='Commit %h vom %cd' --date=short 2>/dev/null || true ;;
+  help|-h|--help|*)
+    cat <<EOF
+WheelBridge – Lenkrad an Xbox
+
+  wheelbridge doctor        Systemcheck mit Lösungshinweisen
+  wheelbridge url           Adresse des Web-Dashboards anzeigen
+  wheelbridge status        Dienststatus
+  wheelbridge logs          Log live verfolgen
+  wheelbridge start|stop|restart
+
+  wheelbridge run [-v]      im Vordergrund starten (stoppt den Dienst)
+  wheelbridge sniff [DATEI] mit GIP-Paketmitschnitt starten (Standard: /tmp/wheelbridge-gip.log)
+  wheelbridge probe [--usb] Lenkrad-Achsen/Knöpfe bzw. Controller-Descriptors anzeigen
+
+  wheelbridge config        $CONF bearbeiten
+  wheelbridge reset         Dashboard-Einstellungen verwerfen
+  wheelbridge update        auf neueste Version aktualisieren
+  wheelbridge uninstall [--purge]
+  wheelbridge version
+EOF
+    [[ "$cmd" == help || "$cmd" == -h || "$cmd" == --help ]] || exit 1 ;;
+esac

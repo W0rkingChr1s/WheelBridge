@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WheelBridge</title>
+<link rel="icon" href="/icon-small.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0e1116">
+<style>
+:root{
+  --bg:#0e1116;--card:#161b22;--card2:#1c222b;--line:#2a313c;--fg:#e6e9ee;--mut:#8b95a3;
+  --acc:#3fb950;--acc2:#2ea043;--warn:#d29922;--err:#f85149;--blue:#58a6ff;
+  --r:10px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+.brand{font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
+.brand img{border-radius:7px}
+.brand small{color:var(--mut);font-weight:400;margin-left:6px}
+@media(max-width:600px){.brand small{display:none}}
+.stage{margin-left:auto;padding:4px 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
+.stage.ok{border-color:var(--acc2);color:var(--acc)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--mut);flex:none}
+.dot.ok{background:var(--acc)}.dot.err{background:var(--err)}
+nav{display:flex;gap:4px;padding:8px 14px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{background:none;border:0;color:var(--mut);padding:8px 12px;border-radius:8px;font:inherit;cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--card2);color:var(--fg)}
+main{max-width:1100px;margin:0 auto;padding:18px}
+section{display:none}section.on{display:block}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h2{font-size:15px;margin:0 0 12px;color:var(--fg)}
+.card h2 small{color:var(--mut);font-weight:400}
+.mut{color:var(--mut)}
+.btn{background:var(--card2);border:1px solid var(--line);color:var(--fg);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.btn:hover{border-color:var(--mut)}
+.btn.pri{background:var(--acc2);border-color:var(--acc2);color:#fff}
+.btn.dang{color:var(--err)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Checkliste */
+.checks{list-style:none;margin:0;padding:0}
+.checks li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.checks li:last-child{border:0}
+.ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;background:var(--card2);color:var(--mut)}
+.ic.ok{background:rgba(63,185,80,.15);color:var(--acc)}
+.ic.bad{background:rgba(248,81,73,.15);color:var(--err)}
+.ic.warn{background:rgba(210,153,34,.15);color:var(--warn)}
+.checks .hint{font-size:13px;color:var(--mut);margin-top:2px}
+.checks .hint.bad{color:#ffa198}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--card2);border-radius:8px;padding:10px}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--mut)}
+/* Live */
+.live{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:16px}
+@media(max-width:700px){.live{grid-template-columns:1fr}}
+#wheelsvg{width:100%;max-width:300px;display:block;margin:auto}
+#wheelsvg .rim{fill:none;stroke:#3a4350;stroke-width:14}
+#wheelsvg .spoke{stroke:#3a4350;stroke-width:12;stroke-linecap:round}
+#wheelsvg .hub{fill:#2a313c}
+#wheelsvg .mark{fill:var(--err)}
+.angle{text-align:center;font:600 22px var(--mono);margin-top:6px}
+.pedals{display:flex;gap:18px;justify-content:center;align-items:flex-end;height:180px}
+.ped{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
+.vbar{width:38px;height:140px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.vbar i{position:absolute;left:0;right:0;bottom:0;background:var(--blue);height:0}
+.ped.gas .vbar i{background:var(--acc)}.ped.brk .vbar i{background:var(--err)}.ped.clu .vbar i{background:var(--warn)}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{padding:5px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font:600 12px var(--mono);color:var(--mut)}
+.pill.on{background:var(--blue);border-color:var(--blue);color:#0b1220}
+.hbar{height:10px;background:var(--card2);border-radius:5px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.hbar i{position:absolute;top:0;bottom:0;left:0;background:var(--blue);width:0}
+/* Tabellen */
+table{width:100%;border-collapse:collapse}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--mut);font-weight:500}
+td small{color:var(--mut);font-family:var(--mono);margin-left:4px}
+tr.held td{background:rgba(88,166,255,.08)}
+select,input[type=number]{background:var(--card2);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit}
+.cand{font:600 20px var(--mono);padding:12px;background:var(--card2);border-radius:8px;margin-bottom:10px;text-align:center}
+.cand.fresh{animation:flash .6s}
+@keyframes flash{from{background:rgba(88,166,255,.35)}to{background:var(--card2)}}
+.xbtn{background:none;border:0;color:var(--mut);cursor:pointer;font-size:16px}
+.xbtn:hover{color:var(--err)}
+/* Einstellungen */
+.field{display:grid;grid-template-columns:1fr 130px;gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border:0}
+.field label{font-weight:500}
+.field .desc{grid-column:1/-1;font-size:12px;color:var(--mut)}
+.field .ctl{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.field input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--acc)}
+.field output{font:600 13px var(--mono);color:var(--blue)}
+/* Anleitung */
+.guide svg{width:100%;height:auto;display:block}
+.guide ol{padding-left:22px}.guide li{margin:8px 0}
+.note{border-left:3px solid var(--warn);background:rgba(210,153,34,.08);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+.note.bad{border-color:var(--err);background:rgba(248,81,73,.08)}
+code{font-family:var(--mono);background:var(--card2);padding:1px 6px;border-radius:4px;font-size:13px}
+pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border-radius:8px;overflow-x:auto;font-size:13px}
+/* Log */
+#log{font:12px/1.5 var(--mono);background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:10px;height:65vh;overflow:auto;white-space:pre-wrap;word-break:break-word}
+#log .WARNING{color:var(--warn)}#log .ERROR,#log .CRITICAL{color:var(--err)}#log .DEBUG{color:var(--mut)}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+#toast.show{opacity:1}#toast.err{border-color:var(--err);color:#ffa198}
+.empty{color:var(--mut);padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><img src="/icon-small.svg" alt="" width="28" height="28">WheelBridge <small>Lenkrad → Xbox</small></div>
+  <div id="stage" class="stage">verbinde …</div>
+  <div id="conn" class="dot" title="Verbindung zum Pi"></div>
+</header>
+<nav id="nav">
+  <button data-tab="uebersicht">Übersicht</button>
+  <button data-tab="live">Live</button>
+  <button data-tab="mapping">Mapping</button>
+  <button data-tab="einstellungen">Einstellungen</button>
+  <button data-tab="anleitung">Anleitung</button>
+  <button data-tab="log">Log</button>
+</nav>
+<main>
+
+<!-- ÜBERSICHT -->
+<section id="tab-uebersicht">
+  <div class="grid">
+    <div class="card">
+      <h2>Checkliste <small>– von oben nach unten abarbeiten</small></h2>
+      <ul class="checks" id="checks"></ul>
+    </div>
+    <div>
+      <div class="card">
+        <h2>Geräte</h2>
+        <table>
+          <tr><td class="mut">Controller</td><td id="d-ctrl">–</td></tr>
+          <tr><td class="mut">Lenkrad</td><td id="d-wheel">–</td></tr>
+          <tr><td class="mut">Laufzeit</td><td id="d-up">–</td></tr>
+        </table>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Datenverkehr <small>(Pakete)</small></h2>
+        <div class="stats">
+          <div class="stat"><b id="s-x2c">0</b><span>Xbox → Controller</span></div>
+          <div class="stat"><b id="s-c2x">0</b><span>Controller → Xbox</span></div>
+          <div class="stat"><b id="s-auth">0</b><span>Handshake</span></div>
+          <div class="stat"><b id="s-inj">0</b><span>Lenkrad-Reports</span></div>
+          <div class="stat"><b id="s-rumble">0</b><span>Rumble</span></div>
+          <div class="stat"><b id="s-ctrl_in">0</b><span>Controller-Inputs</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Aktionen</h2>
+        <div class="row">
+          <button class="btn" id="a-rumble">Vibration testen</button>
+          <button class="btn" id="a-reconnect">Controller neu anmelden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE -->
+<section id="tab-live">
+  <div class="live">
+    <div class="card">
+      <h2>Lenkung</h2>
+      <svg id="wheelsvg" viewBox="-110 -110 220 220">
+        <g id="wheelrot">
+          <circle r="92" class="rim"/>
+          <path d="M-86 8 L-24 8 M24 8 L86 8 M0 26 L0 86" class="spoke"/>
+          <circle r="26" class="hub"/>
+          <rect x="-5" y="-101" width="10" height="18" rx="2" class="mark"/>
+        </g>
+      </svg>
+      <div class="angle" id="angle">0°</div>
+      <div class="hbar" style="margin-top:10px"><i id="lxbar"></i></div>
+      <div class="mut" style="font-size:12px;margin-top:4px;text-align:center">Stick-Ausschlag (LX)</div>
+    </div>
+    <div class="card">
+      <h2>Pedale & Knöpfe</h2>
+      <div class="pedals">
+        <div class="ped clu"><div class="vbar"><i id="p-clu"></i></div>Kupplung</div>
+        <div class="ped brk"><div class="vbar"><i id="p-brk"></i></div>Bremse (LT)</div>
+        <div class="ped gas"><div class="vbar"><i id="p-gas"></i></div>Gas (RT)</div>
+      </div>
+      <h2 style="margin-top:18px">Xbox-Knöpfe <small id="gear"></small></h2>
+      <div class="pills" id="pad"></div>
+      <h2 style="margin-top:18px">Vibration</h2>
+      <div class="hbar"><i id="rumblebar" style="background:var(--warn)"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPPING -->
+<section id="tab-mapping">
+  <div id="map-empty" class="card empty">Kein Lenkrad verbunden – Mapping ist erst mit angeschlossenem Lenkrad möglich.</div>
+  <div class="grid" id="map-body">
+    <div class="card">
+      <h2>Achsen <small>– Pedal treten / Lenkrad drehen, dann Rolle zuweisen</small></h2>
+      <table><thead><tr><th>Achse</th><th style="width:40%">Wert</th><th>Rolle</th><th>Inv.</th></tr></thead>
+      <tbody id="axes"></tbody></table>
+      <p class="mut" style="font-size:13px">Tipp: Die Pedale des G27 melden im Ruhezustand den Maximalwert. Ist der Balken ohne Treten voll, setze den Haken bei „Inv.“.</p>
+    </div>
+    <div class="card">
+      <h2>Knöpfe <small>– Knopf am Lenkrad drücken, Ziel wählen</small></h2>
+      <div class="cand" id="cand">Drücke einen Knopf …</div>
+      <div class="row">
+        <select id="key-target" style="flex:1"></select>
+        <button class="btn pri" id="key-assign">Zuweisen</button>
+      </div>
+      <table style="margin-top:14px"><thead><tr><th>Lenkrad</th><th>Xbox / Gang</th><th></th></tr></thead>
+      <tbody id="keymap"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- EINSTELLUNGEN -->
+<section id="tab-einstellungen">
+  <div class="grid" id="settings"></div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn pri" id="s-save">Speichern & übernehmen</button>
+    <button class="btn dang" id="s-reset">Auf Standard (config.toml) zurücksetzen</button>
+  </div>
+</section>
+
+<!-- ANLEITUNG -->
+<section id="tab-anleitung" class="guide">
+  <div class="card">
+    <h2>Verkabelung</h2>
+    <svg viewBox="0 0 860 470" role="img" aria-label="Verkabelungsplan">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8b95a3"/></marker>
+      </defs>
+      <style>
+        .bx{fill:#1c222b;stroke:#3a4350;stroke-width:1.5}
+        .bx.pi{stroke:#3fb950}.bx.x{stroke:#58a6ff}.bx.pw{stroke:#d29922}
+        .t{fill:#e6e9ee;font:600 15px system-ui,sans-serif}
+        .s{fill:#8b95a3;font:12px system-ui,sans-serif}
+        .ln{stroke:#8b95a3;stroke-width:2;fill:none}
+        .ln.d{stroke:#58a6ff}.ln.p{stroke:#d29922;stroke-dasharray:6 4}
+        .lb{fill:#c9d1d9;font:12px system-ui,sans-serif}
+        .warn{fill:#f85149;font:600 12px system-ui,sans-serif}
+      </style>
+      <!-- Xbox -->
+      <rect class="bx x" x="20" y="40" width="170" height="78" rx="10"/>
+      <text class="t" x="36" y="72">Xbox One X</text>
+      <text class="s" x="36" y="94">beliebiger USB-A-Port</text>
+      <!-- Splitter -->
+      <rect class="bx" x="300" y="40" width="190" height="78" rx="10"/>
+      <text class="t" x="316" y="72">USB-C-Splitter</text>
+      <text class="s" x="316" y="94">Daten ⟷ | Strom ⟶ getrennt</text>
+      <!-- Netzteil -->
+      <rect class="bx pw" x="300" y="180" width="190" height="62" rx="10"/>
+      <text class="t" x="316" y="208">Pi-Netzteil</text>
+      <text class="s" x="316" y="228">5,1 V / 3 A (offizielles)</text>
+      <!-- Pi -->
+      <rect class="bx pi" x="600" y="30" width="240" height="250" rx="12"/>
+      <text class="t" x="618" y="62">Raspberry Pi 4</text>
+      <text class="s" x="618" y="84">USB-C = Gadget zur Xbox</text>
+      <text class="s" x="618" y="102">USB-A = Host für Controller + Lenkrad</text>
+      <rect x="618" y="226" width="44" height="34" rx="4" fill="#2a313c"/><rect x="672" y="226" width="44" height="34" rx="4" fill="#2a313c"/>
+      <rect x="726" y="226" width="44" height="34" rx="4" fill="#2a313c"/><rect x="780" y="226" width="44" height="34" rx="4" fill="#2a313c"/>
+      <text class="s" x="618" y="218">USB-A-Ports</text>
+      <rect x="586" y="62" width="14" height="28" rx="3" fill="#3fb950"/>
+      <!-- Controller -->
+      <rect class="bx x" x="600" y="340" width="240" height="100" rx="10"/>
+      <text class="t" x="618" y="372">Xbox-Controller (Original)</text>
+      <text class="s" x="618" y="394">nur für den Handshake</text>
+      <text class="warn" x="618" y="418">⚠ ohne Akkus / Batterien!</text>
+      <!-- G27 -->
+      <rect class="bx" x="300" y="330" width="190" height="110" rx="10"/>
+      <text class="t" x="316" y="362">Logitech G27</text>
+      <text class="s" x="316" y="384">Basis mit eigenem Netzteil</text>
+      <text class="s" x="316" y="404">Pedale + Shifter in die Basis</text>
+      <rect class="bx" x="20" y="330" width="170" height="50" rx="10"/>
+      <text class="t" x="36" y="361">Pedale</text>
+      <rect class="bx" x="20" y="392" width="170" height="50" rx="10"/>
+      <text class="t" x="36" y="423">H-Shifter</text>
+      <rect class="bx pw" x="300" y="258" width="190" height="44" rx="10"/>
+      <text class="t" x="316" y="285">G27-Netzteil</text>
+      <!-- Leitungen -->
+      <path class="ln d" d="M190 79 H300" marker-end="url(#ar)"/>
+      <text class="lb" x="196" y="70">USB-A → USB-C</text>
+      <text class="lb" x="214" y="100">(Datenkabel)</text>
+      <path class="ln p" d="M395 180 V118" marker-end="url(#ar)"/>
+      <text class="lb" x="404" y="160">Strom</text>
+      <path class="ln d" d="M490 76 H586" marker-end="url(#ar)"/>
+      <text class="lb" x="500" y="100">USB-C</text>
+      <path class="ln d" d="M640 260 V340" marker-end="url(#ar)"/>
+      <text class="lb" x="648" y="310">USB (Daten)</text>
+      <path class="ln d" d="M748 260 V300 H545 V385 H490" marker-end="url(#ar)"/>
+      <text class="lb" x="556" y="296">USB</text>
+      <path class="ln" d="M190 355 H300" marker-end="url(#ar)"/>
+      <path class="ln" d="M190 417 H300" marker-end="url(#ar)"/>
+      <text class="lb" x="220" y="348">DB9</text><text class="lb" x="220" y="410">DB9</text>
+      <path class="ln p" d="M395 302 V330" marker-end="url(#ar)"/>
+    </svg>
+    <div class="note bad"><b>Kein USB-A-auf-USB-A-Kabel!</b> Die USB-A-Buchsen des Pi können nicht als Gerät arbeiten – nur der USB-C-Port kann das. A-A-Kabel verbinden außerdem zwei Stromquellen direkt miteinander und können USB-Ports beschädigen.</div>
+    <div class="note"><b>Pi nicht über die Xbox versorgen.</b> Ein Xbox-USB-Port liefert ca. 0,9 A, der Pi 4 braucht bis 3 A → Unterspannung und Abstürze. Der Splitter nimmt die Daten von der Xbox und den Strom vom Netzteil. Die Übersicht warnt bei Unterspannung.</div>
+  </div>
+
+  <div class="grid" style="margin-top:16px">
+    <div class="card">
+      <h2>Einkaufsliste</h2>
+      <ul>
+        <li>Raspberry Pi 4 (2 GB reichen) + microSD ≥ 8 GB</li>
+        <li>Offizielles Pi-4-Netzteil 5,1 V / 3 A</li>
+        <li><b>USB-C-Daten/Strom-Splitter</b> für Pi-Gadget-Betrieb (Datenzweig ohne VBUS-Durchleitung)</li>
+        <li>USB-A-auf-USB-C-<b>Datenkabel</b> (Xbox → Splitter)</li>
+        <li>Original-Xbox-Controller (One oder Series) + Datenkabel (Micro-USB bzw. USB-C)</li>
+        <li>G27 mit Netzteil, Pedalen und Shifter (vorhanden)</li>
+      </ul>
+      <p class="mut" style="font-size:13px">Alternative ohne Splitter: Pi über die GPIO-Pins 2/4 (5 V) und 6 (GND) versorgen und ein Datenkabel mit getrennter VBUS-Ader nutzen. Das umgeht die Sicherung des Pi – nur wenn du weißt, was du tust.</p>
+    </div>
+    <div class="card">
+      <h2>Inbetriebnahme</h2>
+      <ol>
+        <li>Raspberry Pi OS Lite (64 Bit, Bookworm) flashen, SSH + WLAN/LAN einrichten.</li>
+        <li>Auf dem Pi installieren:
+          <pre class="cmd">curl -fsSL https://raw.githubusercontent.com/W0rkingChr1s/WheelBridge/main/install.sh | sudo bash
+sudo reboot</pre>
+          Danach dieses Dashboard unter <code>http://wheelbridge.local:8080</code> öffnen (Adresse: <code>wheelbridge url</code>).</li>
+        <li><b>Noch nicht an die Xbox.</b> Erst Lenkrad + Controller (ohne Akkus) an den Pi, bis die Checkliste bis „Xbox-Schnittstelle bereit“ grün ist.</li>
+        <li>Im Tab <b>Mapping</b> Achsen und Knöpfe zuweisen, im Tab <b>Live</b> kontrollieren.</li>
+        <li>Splitter: Netzteil an den Stromeingang, Xbox-Kabel an den Dateneingang, Ausgang in den USB-C-Port des Pi.</li>
+        <li>Xbox einschalten. Die Checkliste sollte „Mit Xbox verbunden“ → „Handshake“ → „Lenkrad-Eingaben aktiv“ durchlaufen.</li>
+        <li>Probleme? <code>wheelbridge doctor</code> prüft alles im Terminal, <code>wheelbridge sniff</code> zeichnet den Xbox-Verkehr für Bug-Reports auf. Ausführlich: <a href="https://github.com/W0rkingChr1s/WheelBridge/blob/main/docs/INSTALL.md" target="_blank" rel="noopener" style="color:var(--blue)">docs/INSTALL.md</a></li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>Im Spiel (z. B. Forza)</h2>
+      <ul>
+        <li>Erweiterte Steuerung: <b>Lenkung innere Deadzone = 0</b>, äußere = 100.</li>
+        <li>Kupplung auf den in den Einstellungen gewählten Knopf (Standard LB) legen.</li>
+        <li>Lenkwinkel 270–360° ist ein guter Start. 900° fühlt sich mit Gamepad-Lenkung träge an.</li>
+        <li>Es gibt kein echtes Force Feedback: Zentrierfeder lokal, Vibration aus dem Rumble des Spiels.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Fehlersuche</h2>
+      <table>
+        <tr><td>Kein „Mit Xbox verbunden“</td><td class="mut">Kabel/Splitter-Richtung prüfen; Datenkabel statt Ladekabel; <code>ls /sys/class/udc</code></td></tr>
+        <tr><td>Verbunden, kein Handshake</td><td class="mut">„Controller neu anmelden“ klicken; xpad gesperrt? Log prüfen</td></tr>
+        <tr><td>Bricht nach Handshake ab</td><td class="mut"><code>/tmp/gip.log</code> sichern und auswerten</td></tr>
+        <tr><td>Controller verbindet direkt</td><td class="mut">Akkus raus – sonst Funk statt Kabel</td></tr>
+        <tr><td>Lenkung zappelt in der Mitte</td><td class="mut">Gamma erhöhen; Deadzone im Spiel prüfen</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- LOG -->
+<section id="tab-log">
+  <div class="row" style="margin-bottom:10px">
+    <label class="row"><input type="checkbox" id="log-follow" checked> automatisch scrollen</label>
+    <button class="btn" id="log-clear">Ansicht leeren</button>
+  </div>
+  <div id="log"></div>
+</section>
+</main>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const XB = ["A","B","X","Y","LB","RB","LS","RS","MENU","VIEW","UP","DOWN","LEFT","RIGHT"];
+const BITS = {MENU:4,VIEW:8,A:16,B:32,X:64,Y:128,UP:256,DOWN:512,LEFT:1024,RIGHT:2048,LB:4096,RB:8192,LS:16384,RS:32768};
+const ROLES = {"":"–", steering:"Lenkung", throttle:"Gas", brake:"Bremse", clutch:"Kupplung"};
+let cfg = null, st = null, lastLog = 0, axesSig = "", keySig = "", candidate = null, candT = 0, queued = false;
+
+const get = (o, p) => p.split(".").reduce((a, k) => a == null ? undefined : a[k], o);
+function setp(o, p, v){ const k = p.split("."); let a = o; for (const x of k.slice(0, -1)) a = a[x] ??= {}; a[k.at(-1)] = v; return o; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let toastT;
+function toast(msg, err){ const t = $("#toast"); t.textContent = msg; t.className = "show" + (err ? " err" : ""); clearTimeout(toastT); toastT = setTimeout(() => t.className = "", 2600); }
+
+async function api(path, body){
+  const r = await fetch(path, body === undefined ? {} : {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  const j = await r.json();
+  if (!r.ok || j.ok === false) throw new Error(j.error || r.statusText);
+  return j;
+}
+async function loadCfg(){ cfg = (await api("/api/config")).effective; renderSettings(); axesSig = keySig = ""; }
+async function patch(p, msg = "Gespeichert"){
+  try { const j = await api("/api/config", p); cfg = j.config; renderSettings(); axesSig = keySig = ""; toast(msg); }
+  catch (e) { toast(e.message, true); }
+}
+
+/* ---------- Tabs ---------- */
+function showTab(id){
+  if (!$("#tab-" + id)) id = "uebersicht";
+  $$("section").forEach(s => s.classList.toggle("on", s.id === "tab-" + id));
+  $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === id));
+  history.replaceState(null, "", "#" + id);
+}
+$("#nav").addEventListener("click", e => { if (e.target.dataset.tab) showTab(e.target.dataset.tab); });
+window.addEventListener("hashchange", () => showTab(location.hash.slice(1)));
+
+/* ---------- Checkliste ---------- */
+const CHECKS = [
+  {t:"USB-Gadget-Treiber aktiv", ok:s => s.checks.udc,
+   hint:"Neustart nach der Installation nötig (sudo reboot). Prüfen: wheelbridge doctor"},
+  {t:"xpad-Treiber gesperrt", ok:s => !s.checks.xpad_loaded,
+   hint:"xpad würde den Controller belegen: sudo modprobe -r xpad (der Installer sperrt ihn dauerhaft)"},
+  {t:"Stromversorgung stabil", ok:s => s.checks.undervoltage_now == null ? null : !s.checks.undervoltage_now,
+   warn:s => s.checks.undervoltage_boot,
+   hint:"Unterspannung! Pi nicht über die Xbox versorgen – Splitter + 5,1 V/3 A-Netzteil verwenden.",
+   whint:"Seit dem Boot gab es Unterspannung. Netzteil/Splitter prüfen."},
+  {t:"Läuft als root", ok:s => s.checks.root, hint:"Mit sudo starten bzw. über den systemd-Dienst."},
+  {t:"Xbox-Controller am Pi", ok:s => s.controller.connected,
+   hint:s => (s.errors.controller ? s.errors.controller + " – " : "") + "Original-Controller per Datenkabel an einen USB-A-Port des Pi. Akkus raus!"},
+  {t:"Lenkrad am Pi", ok:s => s.wheel.connected,
+   hint:s => (s.errors.wheel ? s.errors.wheel + " – " : "") + "G27 an einen USB-A-Port, eigenes Netzteil anschließen."},
+  {t:"Xbox-Schnittstelle bereit", ok:s => s.gadget,
+   hint:s => s.errors.gadget || "Wird angelegt, sobald der Controller erkannt ist."},
+  {t:"Mit Xbox verbunden", ok:s => s.xbox.enabled,
+   hint:"Xbox → USB-A-auf-USB-C-Datenkabel → Splitter → USB-C des Pi. Xbox einschalten."},
+  {t:"Handshake mit Controller", ok:s => s.xbox.auth_seen,
+   hint:"Startet automatisch. Hängt es: „Controller neu anmelden“ und Log prüfen."},
+  {t:"Lenkrad-Eingaben aktiv", ok:s => s.xbox.armed,
+   hint:"Startet nach dem Handshake. Notfalls einmal einen Knopf am Controller drücken."},
+];
+function renderChecks(s){
+  let blocked = false;
+  $("#checks").innerHTML = CHECKS.map(c => {
+    const ok = c.ok(s), warn = c.warn && c.warn(s);
+    let cls = "", sym = "?", hint = "";
+    if (ok === true && warn) { cls = "warn"; sym = "!"; hint = c.whint; }
+    else if (ok === true) { cls = "ok"; sym = "✓"; }
+    else if (ok === false) { cls = blocked ? "" : "bad"; sym = blocked ? "·" : "✗"; hint = blocked ? "" : (typeof c.hint === "function" ? c.hint(s) : c.hint); blocked = true; }
+    return `<li><div class="ic ${cls}">${sym}</div><div><div>${esc(c.t)}</div>${hint ? `<div class="hint ${cls === "bad" ? "bad" : ""}">${esc(hint)}</div>` : ""}</div></li>`;
+  }).join("");
+}
+
+/* ---------- Übersicht ---------- */
+function fmtUp(s){ const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? `${h} h ${m} min` : `${m} min ${s % 60} s`; }
+function renderOverview(s){
+  renderChecks(s);
+  $("#d-ctrl").textContent = s.controller.connected ? (s.controller.ids || "verbunden") : "nicht gefunden";
+  $("#d-wheel").textContent = s.wheel.connected ? `${s.wheel.name}${s.wheel.ffb ? " (FFB)" : ""}` : "nicht gefunden";
+  $("#d-up").textContent = fmtUp(s.uptime);
+  for (const [k, v] of Object.entries(s.stats)) { const el = $("#s-" + k); if (el) el.textContent = v; }
+  const stg = $("#stage"); stg.textContent = s.stage; stg.classList.toggle("ok", s.xbox.armed);
+}
+
+/* ---------- Live ---------- */
+$("#pad").innerHTML = XB.map(b => `<span class="pill" data-b="${b}">${b}</span>`).join("");
+function axisNorm(s, role){
+  const code = s.raw?.roles?.[role]; const ax = s.raw?.axes?.find(a => a.code === code);
+  if (!ax || ax.max === ax.min) return null;
+  let n = (ax.value - ax.min) / (ax.max - ax.min);
+  const inv = role === "steering" ? get(cfg, "steering.invert") : get(cfg, `pedals.${role}.invert`);
+  return inv ? 1 - n : n;
+}
+function renderLive(s){
+  const deg = get(cfg, "wheel.steering_degrees") || 270, lx = s.pad.lx / 32767;
+  $("#wheelrot").setAttribute("transform", `rotate(${(lx * deg / 2).toFixed(1)})`);
+  $("#angle").textContent = `${Math.round(lx * deg / 2)}°`;
+  const b = $("#lxbar"); b.style.left = (lx < 0 ? 50 + lx * 50 : 50) + "%"; b.style.width = Math.abs(lx) * 50 + "%";
+  $("#p-gas").style.height = s.pad.rt / 10.23 + "%";
+  $("#p-brk").style.height = s.pad.lt / 10.23 + "%";
+  const c = axisNorm(s, "clutch"); $("#p-clu").style.height = (c == null ? 0 : c * 100) + "%";
+  $$("#pad .pill").forEach(el => el.classList.toggle("on", !!(s.pad.buttons & BITS[el.dataset.b])));
+  $("#gear").textContent = s.raw?.gear != null ? `– H-Shifter: Gang ${s.raw.gear === 0 ? "R" : s.raw.gear} (geschätzt)` : "";
+  $("#rumblebar").style.width = Math.min(100, s.rumble * 100) + "%";
+}
+
+/* ---------- Mapping ---------- */
+$("#key-target").innerHTML =
+  `<optgroup label="Xbox-Knopf">${XB.map(b => `<option value="${b}">${b}</option>`).join("")}</optgroup>` +
+  `<optgroup label="H-Shifter (sequentiell)">${[1,2,3,4,5,6].map(g => `<option value="gear:${g}">Gang ${g}</option>`).join("")}<option value="gear:0">Rückwärts</option></optgroup>` +
+  `<option value="">Belegung entfernen</option>`;
+
+function roleOf(s, code){ return Object.entries(s.raw.roles).find(([, c]) => c === code)?.[0] || ""; }
+function renderMapping(s){
+  const has = !!s.raw;
+  $("#map-empty").style.display = has ? "none" : "";
+  $("#map-body").style.display = has ? "" : "none";
+  if (!has) return;
+  // Achsen: Struktur nur bei Änderungen neu bauen, Balken jedes Frame
+  const sig = JSON.stringify([s.raw.axes.map(a => a.code), s.raw.roles, get(cfg, "steering.invert"), get(cfg, "pedals")]);
+  const tb = $("#axes");
+  if (sig !== axesSig && !tb.contains(document.activeElement)) {
+    axesSig = sig;
+    tb.innerHTML = s.raw.axes.map(a => {
+      const r = roleOf(s, a.code);
+      const inv = r === "steering" ? get(cfg, "steering.invert") : r ? get(cfg, `pedals.${r}.invert`) : false;
+      return `<tr data-code="${a.code}" data-name="${esc(a.name)}"><td>${esc(a.name)}<small>${a.code}</small></td>
+        <td><div class="hbar"><i></i></div></td>
+        <td><select class="role">${Object.entries(ROLES).map(([k, v]) => `<option value="${k}" ${k === r ? "selected" : ""}>${v}</option>`).join("")}</select></td>
+        <td><input type="checkbox" class="inv" ${inv ? "checked" : ""} ${r ? "" : "disabled"}></td></tr>`;
+    }).join("");
+  }
+  for (const tr of tb.children) {
+    const a = s.raw.axes.find(x => x.code === +tr.dataset.code); if (!a) continue;
+    tr.querySelector(".hbar i").style.width = ((a.value - a.min) / ((a.max - a.min) || 1) * 100) + "%";
+  }
+  // Kandidat = zuletzt gedrückter Knopf
+  const rec = s.raw.recent[0];
+  if (rec && rec.t > candT) {
+    candT = rec.t; candidate = rec;
+    const el = $("#cand"); el.textContent = `${rec.name}  (${rec.code})`;
+    el.classList.remove("fresh"); void el.offsetWidth; el.classList.add("fresh");
+    const cur = s.raw.map.buttons.find(b => b.code === rec.code), g = s.raw.map.gears.find(x => x.code === rec.code);
+    if (cur) $("#key-target").value = cur.target; else if (g) $("#key-target").value = "gear:" + g.gear;
+  }
+  // Belegungstabelle
+  const ksig = JSON.stringify(s.raw.map);
+  if (ksig !== keySig) {
+    keySig = ksig;
+    const rows = [...s.raw.map.buttons.map(b => ({...b, tgt:b.target})), ...s.raw.map.gears.map(g => ({...g, tgt:g.gear === 0 ? "Gang R" : "Gang " + g.gear}))];
+    $("#keymap").innerHTML = rows.length ? rows.map(r => `<tr data-code="${r.code}"><td>${esc(r.key)}<small>${r.code}</small></td><td>${esc(r.tgt)}</td><td><button class="xbtn" data-del="${r.code}" title="entfernen">✕</button></td></tr>`).join("")
+      : `<tr><td colspan="3" class="mut">Noch nichts belegt.</td></tr>`;
+  }
+  const held = new Set(s.raw.held);
+  for (const tr of $("#keymap").children) tr.classList.toggle("held", held.has(+tr.dataset.code));
+}
+
+$("#axes").addEventListener("change", e => {
+  const tr = e.target.closest("tr"); if (!tr || !st?.raw) return;
+  const code = +tr.dataset.code, name = tr.dataset.name, old = roleOf(st, code);
+  const key = /^\d+$/.test(name) ? String(code) : name;
+  if (e.target.classList.contains("role")) {
+    const r = e.target.value, p = {};
+    if (old === "steering" && r !== "steering") { toast("Lenkung braucht eine Achse – weise sie zuerst einer anderen Achse zu.", true); axesSig = ""; return; }
+    if (old && old !== "steering") setp(p, `pedals.${old}.axis`, "");
+    if (r === "steering") setp(p, "steering.axis", key);
+    else if (r) setp(p, `pedals.${r}.axis`, key);
+    patch(p, r ? `${name} → ${ROLES[r]}` : `${name}: keine Rolle`);
+  } else if (e.target.classList.contains("inv") && old) {
+    patch(setp({}, old === "steering" ? "steering.invert" : `pedals.${old}.invert`, e.target.checked));
+  }
+});
+
+function keyPatch(removeCode, addKey, target){
+  const buttons = {}, gears = {};
+  for (const b of st.raw.map.buttons) if (b.code !== removeCode) buttons[b.key] = b.target;
+  for (const g of st.raw.map.gears) if (g.code !== removeCode) gears[g.key] = g.gear;
+  const p = {buttons, hshifter:{gears}};
+  if (addKey && target) {
+    if (target.startsWith("gear:")) { gears[addKey] = +target.slice(5); if (!get(cfg, "hshifter.enabled")) { p.hshifter.enabled = true; } }
+    else buttons[addKey] = target;
+  }
+  return p;
+}
+$("#key-assign").addEventListener("click", () => {
+  if (!candidate || !st?.raw) return toast("Erst einen Knopf am Lenkrad drücken", true);
+  const tgt = $("#key-target").value, key = /^\d+$/.test(candidate.name) ? String(candidate.code) : candidate.name;
+  const p = keyPatch(candidate.code, key, tgt);
+  const extra = p.hshifter.enabled ? " (H-Shifter aktiviert)" : "";
+  patch(p, tgt ? `${candidate.name} → ${tgt.replace("gear:", "Gang ").replace("Gang 0", "Gang R")}${extra}` : `${candidate.name}: Belegung entfernt`);
+});
+$("#keymap").addEventListener("click", e => {
+  const c = e.target.dataset.del; if (c === undefined || !st?.raw) return;
+  patch(keyPatch(+c), "Belegung entfernt");
+});
+
+/* ---------- Einstellungen ---------- */
+const XBOPT = [["", "– keiner –"], ...XB.map(b => [b, b])];
+const FIELDS = [
+  {grp:"Lenkrad"},
+  {p:"wheel.steering_degrees", l:"Lenkwinkel", d:"Physischer Anschlag des G27 = voller Stickausschlag.", t:"range", min:90, max:900, step:10, u:"°"},
+  {p:"wheel.autocenter", l:"Zentrierfeder", d:"Lokal erzeugte Rückstellkraft.", t:"range", min:0, max:1, step:.05, pct:1},
+  {p:"wheel.gain", l:"FFB-Gesamtstärke", t:"range", min:0, max:1, step:.05, pct:1},
+  {p:"steering.gamma", l:"Lenkkurve (Gamma)", d:"> 1 = feinfühliger um die Mitte, < 1 = direkter.", t:"range", min:.5, max:3, step:.05},
+  {p:"steering.anti_deadzone", l:"Anti-Deadzone", d:"Nur nutzen, wenn sich die Deadzone im Spiel nicht auf 0 stellen lässt.", t:"range", min:0, max:.4, step:.01, pct:1},
+  {p:"steering.invert", l:"Lenkung invertieren", t:"bool"},
+  {grp:"Pedale"},
+  {p:"pedals.throttle.deadzone", l:"Deadzone Gas", t:"range", min:0, max:.2, step:.01, pct:1},
+  {p:"pedals.brake.deadzone", l:"Deadzone Bremse", t:"range", min:0, max:.2, step:.01, pct:1},
+  {p:"pedals.clutch.deadzone", l:"Deadzone Kupplung", t:"range", min:0, max:.2, step:.01, pct:1},
+  {p:"pedals.clutch.button", l:"Kupplung als Knopf", d:"Gamepads haben keine Kupplungsachse – im Spiel diesen Knopf als Kupplung belegen.", t:"sel", opt:XBOPT},
+  {p:"pedals.clutch.threshold", l:"Kupplung Schaltpunkt", t:"range", min:.1, max:.9, step:.05, pct:1},
+  {grp:"Schaltung"},
+  {p:"hshifter.enabled", l:"H-Shifter → sequentiell", d:"Gangwechsel werden als Hoch-/Runterschalt-Pulse gesendet. Gänge im Tab Mapping zuweisen.", t:"bool"},
+  {p:"hshifter.up", l:"Hochschalten", t:"sel", opt:XBOPT.slice(1)},
+  {p:"hshifter.down", l:"Runterschalten", t:"sel", opt:XBOPT.slice(1)},
+  {p:"hshifter.pulse_ms", l:"Pulslänge", t:"range", min:20, max:200, step:10, u:" ms"},
+  {grp:"Vibration & Controller"},
+  {p:"ffb.rumble_gain", l:"Rumble → Lenkrad", d:"0 = aus.", t:"range", min:0, max:1, step:.05, pct:1},
+  {p:"ffb.rumble_hz", l:"Vibrationsfrequenz", t:"range", min:5, max:60, step:1, u:" Hz"},
+  {p:"ffb.silence_controller_rumble", l:"Controller nicht vibrieren lassen", t:"bool"},
+  {p:"controller.merge_inputs", l:"Controller-Eingaben mitnutzen", d:"Knöpfe/Sticks des Controllers bleiben aktiv (Menüs, Kamera).", t:"bool"},
+];
+function fmtVal(f, v){ return f.pct ? Math.round(v * 100) + " %" : (+v).toString() + (f.u || ""); }
+function renderSettings(){
+  if (!cfg) return;
+  let html = "", open = false;
+  for (const f of FIELDS) {
+    if (f.grp) { if (open) html += "</div>"; html += `<div class="card"><h2>${f.grp}</h2>`; open = true; continue; }
+    const v = get(cfg, f.p), id = "f-" + f.p.replace(/\./g, "-");
+    html += `<div class="field"><label for="${id}">${f.l}</label><div class="ctl">`;
+    if (f.t === "range") html += `<output id="${id}-o">${fmtVal(f, v ?? f.min)}</output></div><input type="range" id="${id}" data-p="${f.p}" min="${f.min}" max="${f.max}" step="${f.step}" value="${v ?? f.min}">`;
+    else if (f.t === "bool") html += `<input type="checkbox" id="${id}" data-p="${f.p}" ${v ? "checked" : ""}></div>`;
+    else html += `<select id="${id}" data-p="${f.p}">${f.opt.map(([k, t]) => `<option value="${k}" ${String(v ?? "") === k ? "selected" : ""}>${t}</option>`).join("")}</select></div>`;
+    if (f.d) html += `<div class="desc">${f.d}</div>`;
+    html += `</div>`;
+  }
+  $("#settings").innerHTML = html + (open ? "</div>" : "");
+}
+$("#settings").addEventListener("input", e => {
+  const f = FIELDS.find(x => x.p === e.target.dataset.p);
+  if (f && f.t === "range") $("#" + e.target.id + "-o").textContent = fmtVal(f, e.target.value);
+});
+$("#s-save").addEventListener("click", () => {
+  const p = {};
+  for (const el of $$("#settings [data-p]")) {
+    const f = FIELDS.find(x => x.p === el.dataset.p);
+    setp(p, f.p, f.t === "bool" ? el.checked : f.t === "range" ? +el.value : el.value);
+  }
+  patch(p, "Einstellungen übernommen");
+});
+$("#s-reset").addEventListener("click", async () => {
+  if (!confirm("Alle im Dashboard gemachten Änderungen verwerfen?")) return;
+  try { cfg = (await api("/api/config/reset", {})).config; renderSettings(); axesSig = keySig = ""; toast("Zurückgesetzt"); }
+  catch (e) { toast(e.message, true); }
+});
+
+/* ---------- Aktionen ---------- */
+$("#a-rumble").addEventListener("click", () => api("/api/action/rumble", {}).then(() => toast("Vibration 1 s")).catch(e => toast(e.message, true)));
+$("#a-reconnect").addEventListener("click", () => api("/api/action/reconnect", {}).then(() => toast("Controller wird neu angemeldet")).catch(e => toast(e.message, true)));
+
+/* ---------- Log ---------- */
+function appendLog(lines){
+  if (!lines?.length) return;
+  const box = $("#log"), near = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
+  const frag = document.createDocumentFragment();
+  for (const [id, lvl, text] of lines) {
+    if (id <= lastLog) continue;
+    lastLog = id;
+    const d = document.createElement("div"); d.className = lvl; d.textContent = text; frag.appendChild(d);
+  }
+  box.appendChild(frag);
+  while (box.childElementCount > 800) box.firstChild.remove();
+  if ($("#log-follow").checked && near) box.scrollTop = box.scrollHeight;
+}
+$("#log-clear").addEventListener("click", () => $("#log").innerHTML = "");
+
+/* ---------- Stream ---------- */
+function render(){
+  queued = false;
+  if (!st || !cfg) return;
+  renderOverview(st); renderLive(st); renderMapping(st);
+}
+function connect(){
+  const es = new EventSource("/api/stream");
+  es.onopen = () => { $("#conn").className = "dot ok"; };
+  es.onerror = () => { $("#conn").className = "dot err"; $("#stage").textContent = "keine Verbindung zum Pi"; $("#stage").classList.remove("ok"); };
+  es.onmessage = e => {
+    const d = JSON.parse(e.data); st = d.status; appendLog(d.log);
+    if (!queued) { queued = true; requestAnimationFrame(render); }
+  };
+}
+showTab(location.hash.slice(1) || "uebersicht");
+loadCfg().then(connect).catch(e => { toast("Konfiguration nicht ladbar: " + e.message, true); connect(); });
+</script>
+</body>
+</html>

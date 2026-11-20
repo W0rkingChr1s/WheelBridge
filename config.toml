@@ -1,0 +1,90 @@
+# WheelBridge – Konfiguration (Standardwerte)
+# Änderungen aus dem Web-Dashboard landen in settings.json und überschreiben diese Datei.
+# Achsen-/Knopfcodes am einfachsten im Dashboard (Tab "Mapping") oder mit
+# `wheelbridge probe` ermitteln. Bearbeiten: `wheelbridge config`, danach `wheelbridge restart`.
+# Codes dürfen als Name ("BTN_TRIGGER") oder Zahl ("300") angegeben werden.
+# Xbox-Ziele: A B X Y LB RB LS RS MENU VIEW UP DOWN LEFT RIGHT
+
+[wheel]
+name_match = "G27"
+steering_degrees = 270   # Hardware-Lenkwinkel (lg4ff). Voller Einschlag = voller Stickausschlag.
+autocenter = 0.35        # 0..1 Zentrierfeder (lokal im Lenkrad erzeugt)
+gain = 1.0
+
+[steering]
+axis = "ABS_X"
+invert = false
+gamma = 1.0              # >1 = feinfühliger um die Mitte
+anti_deadzone = 0.0      # Spiel-Deadzone kompensieren. Besser: im Spiel Deadzone innen = 0.
+
+# PLATZHALTER – mit probe.py prüfen! G27-Pedale melden im Ruhezustand meist den Maximalwert -> invert = true
+[pedals.throttle]
+axis = "ABS_Y"
+invert = true
+deadzone = 0.02
+
+[pedals.brake]
+axis = "ABS_RZ"
+invert = true
+deadzone = 0.02
+
+[pedals.clutch]
+axis = "ABS_Z"
+invert = true
+deadzone = 0.02
+button = "LB"            # Kupplung als Knopf (z. B. in Forza auf "Kupplung" legen)
+threshold = 0.5
+
+[dpad]
+hat_x = "ABS_HAT0X"
+hat_y = "ABS_HAT0Y"
+
+# PLATZHALTER – unbelegte Knöpfe werden im Log mit Code angezeigt
+[buttons]
+BTN_TRIGGER = "A"
+BTN_THUMB = "B"
+BTN_THUMB2 = "X"
+BTN_TOP = "Y"
+BTN_TOP2 = "RB"          # rechtes Schaltpaddel -> hochschalten (je nach Spielbelegung)
+BTN_PINKIE = "LB"        # linkes Schaltpaddel
+BTN_BASE = "MENU"
+BTN_BASE2 = "VIEW"
+
+# H-Shifter als sequentielle Schaltung (Gangsprung = mehrere Up/Down-Pulse).
+# Der Pi kennt den Gang im Spiel nicht – nach Rennstart einmal im 1. Gang einkuppeln.
+[hshifter]
+enabled = false
+up = "B"
+down = "X"
+pulse_ms = 60
+initial_gear = 1
+[hshifter.gears]
+# "<code>" = Gang   (R = 0)
+# "BTN_BASE3" = 1
+# "BTN_BASE4" = 2
+
+[ffb]
+rumble_gain = 0.4        # Xbox-Rumble -> Vibration am Lenkrad (0 = aus)
+rumble_hz = 30
+silence_controller_rumble = true
+
+[controller]
+vid = 0x045E
+# pid = 0x0B12           # nur nötig, wenn mehrere MS-Geräte hängen
+merge_inputs = true      # Controller-Knöpfe/Sticks bleiben nutzbar (Menüs, Kamera)
+reset_on_enable = true   # Controller beim Anstecken an die Xbox neu anmelden
+
+[report]
+min_interval_ms = 4
+arm_after_auth_s = 3.0   # Fallback: Injektion starten, wenn Auth seit X s ruhig ist
+
+[web]
+enabled = true
+bind = "0.0.0.0"         # keine Anmeldung! Nur im eigenen Netz, sonst "127.0.0.1" + SSH-Tunnel
+port = 8080
+
+[gadget]
+max_speed = "full-speed" # echter Controller ist Full-Speed
+fs_interval = 4
+hs_interval = 4
+udc = ""                 # leer = automatisch (Pi 4: fe980000.usb)

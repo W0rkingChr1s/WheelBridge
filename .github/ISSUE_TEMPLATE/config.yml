@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Installationsanleitung
+    url: https://github.com/W0rkingChr1s/WheelBridge/blob/main/docs/INSTALL.md
+    about: Viele Probleme löst schon "wheelbridge doctor" und die Fehlersuche-Tabelle.
