@@ -66,9 +66,33 @@ class XboxController:
             intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
         if not self.ep_in or not self.ep_out:
             raise RuntimeError("Endpunkte nicht gefunden")
+        self._disable_audio(dev)
         self.dev, self.intf = dev, intf
         log.info("Controller %04x:%04x geöffnet (EP in 0x%02x, out 0x%02x)",
                  dev.idVendor, dev.idProduct, self.ep_in.bEndpointAddress, self.ep_out.bEndpointAddress)
+
+    def _disable_audio(self, dev):
+        """Audio-Interface (Nr. 1) auf Alt-Setting 0 schalten – wie der Linux-Treiber xpad.
+
+        Ohne diesen SET_INTERFACE-Request bleibt z. B. der Xbox-One-S-Controller (02ea) im
+        ANNOUNCE-Modus: Er nimmt genau ein Paket an, beantwortet es nicht und blockiert dann
+        alle weiteren Schreibzugriffe. Am echten Xbox-Port schickt die Konsole diesen Request
+        selbst; die Bridge reicht aber nur Interrupt-Daten durch, also übernehmen wir das hier.
+        """
+        try:
+            cfg = dev.get_active_configuration()
+            if not any(i.bInterfaceNumber == 1 for i in cfg):
+                return
+            try:
+                if dev.is_kernel_driver_active(1):
+                    dev.detach_kernel_driver(1)
+            except (NotImplementedError, usb.core.USBError):
+                pass
+            usb.util.claim_interface(dev, 1)
+            dev.set_interface_altsetting(interface=1, alternate_setting=0)
+            log.info("Audio-Interface des Controllers deaktiviert (SET_INTERFACE 1/0)")
+        except usb.core.USBError as e:
+            log.warning("Audio-Interface nicht deaktivierbar: %s", e)
 
     def ids(self):
         d = self.dev
