@@ -55,10 +55,13 @@ class XboxController:
                 log.info("Kerneltreiber (xpad?) von Interface %d gelöst", n)
         except (NotImplementedError, usb.core.USBError):
             pass
+        # NICHT erneut SET_CONFIGURATION senden, wenn der Kernel das Gerät schon konfiguriert hat:
+        # Der Xbox-One-S-Controller (02ea, FW 3.01) nimmt danach genau ein Paket an und blockiert
+        # dann alle weiteren Schreibzugriffe, bis er stromlos war (Errno 110). xpad macht es genauso.
         try:
-            dev.set_configuration()
+            dev.get_active_configuration()
         except usb.core.USBError:
-            pass   # schon konfiguriert
+            dev.set_configuration()
         usb.util.claim_interface(dev, n)
         self.ep_in = usb.util.find_descriptor(
             intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
