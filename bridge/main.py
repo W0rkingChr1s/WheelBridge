@@ -116,7 +116,7 @@ class Bridge:
     def _load_params(self):
         c = self.cfg.get("controller", {})
         self.merge = c.get("merge_inputs", True)
-        self.reset_on_enable = c.get("reset_on_enable", False)
+        self.reset_on_enable = c.get("reset_on_enable", True)
         rep = self.cfg.get("report", {})
         self.min_interval = rep.get("min_interval_ms", 4) / 1000.0
         self.arm_after_auth = float(rep.get("arm_after_auth_s", 3.0))

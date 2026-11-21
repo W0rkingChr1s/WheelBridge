@@ -72,9 +72,9 @@ silence_controller_rumble = true
 vid = 0x045E
 # pid = 0x0B12           # nur nötig, wenn mehrere MS-Geräte hängen
 merge_inputs = true      # Controller-Knöpfe/Sticks bleiben nutzbar (Menüs, Kamera)
-reset_on_enable = false  # Controller beim Anstecken an die Xbox per GIP zurücksetzen.
-                         # Meist unnötig: Der Controller meldet sich ohnehin alle 0,5 s an,
-                         # und die Xbox setzt ihn bei Bedarf selbst zurück.
+reset_on_enable = true   # Controller beim Verbinden mit der Xbox per GIP zurücksetzen (POWER 0x07).
+                         # Nötig, damit er sich frisch mit ANNOUNCE meldet – sonst wartet die Xbox ewig.
+                         # (Ein GIP-Reset, kein USB-Reset – der Controller meldet sich dabei kurz neu am USB an.)
 
 [report]
 min_interval_ms = 4
