@@ -113,8 +113,19 @@ class XboxController:
             log.warning("Controller write: %s", e)
             return False
 
-    def reset(self):
-        """USB-Reset -> Controller meldet sich frisch an (neues ANNOUNCE)."""
+    def gip_reset(self):
+        """Controller per GIP zurücksetzen (POWER 0x07, wie es auch die Xbox tut).
+
+        Danach meldet er sich mit ANNOUNCE neu an. Bevorzugt gegenüber usb_reset():
+        Ein USB-Reset bringt z. B. den Xbox-One-S-Controller (045e:02ea, FW 3.01) in einen
+        Zustand, in dem er keine Daten mehr annimmt, bis er stromlos war.
+        """
+        ok = self.write(bytes([0x05, 0x20, 0x00, 0x01, 0x07]))
+        log.info("GIP-Reset an Controller gesendet" if ok else "GIP-Reset fehlgeschlagen")
+        return ok
+
+    def usb_reset(self):
+        """USB-Reset. NICHT im normalen Betrieb verwenden (siehe gip_reset)."""
         with self.lock:
             dev, self.dev = self.dev, None
             if dev is not None:

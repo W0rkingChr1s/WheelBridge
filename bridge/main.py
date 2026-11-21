@@ -116,7 +116,7 @@ class Bridge:
     def _load_params(self):
         c = self.cfg.get("controller", {})
         self.merge = c.get("merge_inputs", True)
-        self.reset_on_enable = c.get("reset_on_enable", True)
+        self.reset_on_enable = c.get("reset_on_enable", False)
         rep = self.cfg.get("report", {})
         self.min_interval = rep.get("min_interval_ms", 4) / 1000.0
         self.arm_after_auth = float(rep.get("arm_after_auth_s", 3.0))
@@ -311,14 +311,9 @@ class Bridge:
         while self.running:
             if self.need_reset.is_set():
                 self.need_reset.clear()
-                log.info("Controller-Reset für frische Anmeldung")
-                try:
-                    self.ctrl.reset()
-                    self.errors["controller"] = None
-                except Exception as e:   # noqa: BLE001
-                    self._err("controller", e)
-                    time.sleep(1)
-                    self.need_reset.set()
+                self.armed = False
+                self.auth_seen = False
+                self.ctrl.gip_reset()      # bewusst KEIN USB-Reset, siehe XboxController.gip_reset
                 continue
             if self.ctrl.dev is None:            # abgesteckt -> neu suchen
                 try:

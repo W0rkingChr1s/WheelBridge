@@ -172,7 +172,7 @@ Fang immer mit `wheelbridge doctor` an. Spätere Probleme hängen oft von frühe
 | „Kein Xbox-Controller am Pi“ | Ladekabel statt Datenkabel? Mit `lsusb` prüfen, ob `045e:` auftaucht |
 | Controller verbindet sich direkt mit der Xbox | Akkus raus |
 | „Mit Xbox verbunden“ fehlt | Kabel bzw. Splitter-Richtung, Datenkabel, anderen Xbox-Port probieren |
-| Verbunden, aber kein Handshake | Dashboard → „Controller neu anmelden“; `wheelbridge logs` |
+| Verbunden, aber kein Handshake | Im Log viele `Controller write: [Errno 110]`? Dann hängt der Controller: **USB-Kabel des Controllers kurz abziehen** (ein Software-Reset reicht dafür nicht). Sonst: Dashboard → „Controller neu anmelden“, `wheelbridge logs` |
 | Bricht nach dem Handshake ab | `wheelbridge sniff` laufen lassen, Log an ein Issue hängen |
 | Lenkrad nicht gefunden | eigenes Netzteil am Lenkrad? Anderes Modell → `name_match` in der Config |
 | Lenkung zappelt in der Mitte | Gamma erhöhen; Deadzone im Spiel prüfen |

@@ -5,6 +5,7 @@ Alle nennenswerten Änderungen an WheelBridge. Format nach [Keep a Changelog](ht
 ## [Unveröffentlicht]
 
 ### Behoben
+- **Controller hing nach dem Verbinden mit der Xbox** (alle Schreibzugriffe mit `Errno 110`). Ursache war der USB-Reset, den die Bridge beim Verbinden ausgelöst hat: Der Xbox-One-S-Controller (045e:02ea) nimmt danach keine Daten mehr an, bis er stromlos war. Die Bridge verzichtet jetzt auf USB-Resets und nutzt bei Bedarf den GIP-Reset (`POWER 0x07`), den auch die Xbox verwendet. `reset_on_enable` steht standardmäßig auf `false`.
 - Installer und `doctor` werten `dtoverlay=dwc2` jetzt abschnittsweise aus. Die `config.txt` von Raspberry Pi OS 13 (Trixie) enthält standardmäßig `[cm5] dtoverlay=dwc2,dr_mode=host`. Das wurde fälschlich als „Overlay schon vorhanden“ erkannt, und der Gadget-Modus wurde nie aktiviert.
 
 ### Geplant
