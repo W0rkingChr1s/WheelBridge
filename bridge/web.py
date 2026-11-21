@@ -76,6 +76,19 @@ def make_handler(bridge, ringlog):
             if path in ("/", "/index.html"):
                 with open(os.path.join(STATIC, "index.html"), "rb") as f:
                     self._send(200, f.read(), "text/html; charset=utf-8")
+            elif path.startswith("/fonts/") and path.endswith(".woff2") and "/" not in path[7:] and ".." not in path:
+                fp = os.path.join(STATIC, "fonts", path[7:])
+                if os.path.isfile(fp):
+                    with open(fp, "rb") as f:
+                        body = f.read()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "font/woff2")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+                    self.end_headers()
+                    self.wfile.write(body)
+                else:
+                    self._json({"ok": False, "error": "not found"}, 404)
             elif path in ASSETS:
                 with open(os.path.join(STATIC, path.lstrip("/")), "rb") as f:
                     self._send(200, f.read(), ASSETS[path])

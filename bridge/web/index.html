@@ -8,92 +8,171 @@
 <link rel="alternate icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#0e1116">
+<meta name="theme-color" content="#070c13">
 <style>
+@font-face{font-family:"Rajdhani";src:url(/fonts/rajdhani-500.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Rajdhani";src:url(/fonts/rajdhani-600.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Rajdhani";src:url(/fonts/rajdhani-700.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Barlow";src:url(/fonts/barlow-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Barlow";src:url(/fonts/barlow-500.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Barlow";src:url(/fonts/barlow-600.woff2) format("woff2");font-weight:600;font-display:swap}
 :root{
-  --bg:#0e1116;--card:#161b22;--card2:#1c222b;--line:#2a313c;--fg:#e6e9ee;--mut:#8b95a3;
-  --acc:#3fb950;--acc2:#2ea043;--warn:#d29922;--err:#f85149;--blue:#58a6ff;
-  --r:10px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  /* Nacht-Boxengasse: Telemetrie-Farben mit Bedeutung */
+  --bg:#070c13;--card:#0d1520;--card2:#132031;--line:#1e3147;--line2:#2a4562;
+  --fg:#dbe6f0;--mut:#7f93a8;
+  --cyan:#3ad7ff;   /* Lenkung, Daten, Fokus */
+  --green:#4be08a;  /* Gas, ok */
+  --red:#ff4d5e;    /* Bremse, Fehler */
+  --amber:#ffb020;  /* Kupplung, Strom, Warnung */
+  --blue:var(--cyan);--acc:var(--green);--acc2:#2bb56a;--warn:var(--amber);--err:var(--red);
+  --disp:"Rajdhani",system-ui,sans-serif;--body:"Barlow",system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --cut:14px;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
-.brand{font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
-.brand img{border-radius:7px}
-.brand small{color:var(--mut);font-weight:400;margin-left:6px}
-@media(max-width:600px){.brand small{display:none}}
-.stage{margin-left:auto;padding:4px 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
-.stage.ok{border-color:var(--acc2);color:var(--acc)}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--mut);flex:none}
-.dot.ok{background:var(--acc)}.dot.err{background:var(--err)}
-nav{display:flex;gap:4px;padding:8px 14px;border-bottom:1px solid var(--line);overflow-x:auto}
-nav button{background:none;border:0;color:var(--mut);padding:8px 12px;border-radius:8px;font:inherit;cursor:pointer;white-space:nowrap}
-nav button.on{background:var(--card2);color:var(--fg)}
-main{max-width:1100px;margin:0 auto;padding:18px}
+[hidden]{display:none!important}
+html,body{margin:0;color:var(--fg);font:15px/1.5 var(--body)}
+body{background:
+  radial-gradient(1200px 700px at 15% -10%,rgba(58,215,255,.08),transparent 60%),
+  radial-gradient(900px 600px at 110% 110%,rgba(75,224,138,.05),transparent 60%),
+  linear-gradient(rgba(58,215,255,.03) 1px,transparent 1px) 0 0/36px 36px,
+  linear-gradient(90deg,rgba(58,215,255,.03) 1px,transparent 1px) 0 0/36px 36px,
+  var(--bg);background-attachment:fixed;min-height:100vh}
+::selection{background:rgba(58,215,255,.3)}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+a{color:var(--cyan)}
+
+/* ---------- Kopfzeile mit Shift-Lights ---------- */
+header{display:flex;align-items:center;gap:18px;padding:12px 22px;position:sticky;top:0;z-index:5;
+  background:linear-gradient(180deg,rgba(7,12,19,.97),rgba(7,12,19,.9));backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan) 30%,transparent 70%);opacity:.45}
+.brand{font:700 22px/1 var(--disp);letter-spacing:.03em;display:flex;align-items:center;gap:10px}
+.brand img{border-radius:7px;box-shadow:0 0 18px rgba(58,215,255,.25)}
+.brand small{font:500 14px var(--disp);color:var(--mut);margin-left:2px;letter-spacing:.02em}
+.shift{display:flex;gap:6px;padding:6px 10px;background:#04080d;border:1px solid var(--line);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.shift i{width:18px;height:10px;border-radius:2px;background:#16212e;box-shadow:inset 0 0 0 1px #1f2d3d;transition:background .25s,box-shadow .25s}
+.shift i.on{background:var(--c);box-shadow:0 0 10px var(--c),inset 0 0 0 1px rgba(255,255,255,.25)}
+.shift i.bad{animation:blinkbad 1s steps(2) infinite}
+@keyframes blinkbad{50%{background:var(--red);box-shadow:0 0 10px var(--red)}}
+.shift.all i.on{animation:flash .9s ease-out 1}
+@keyframes flash{0%,40%{filter:brightness(1.8)}100%{filter:none}}
+.shift.sweep i{animation:sweep .9s ease-out 1 both}
+@keyframes sweep{0%{background:#16212e}35%{background:var(--c);box-shadow:0 0 12px var(--c)}100%{background:#16212e}}
+.stage{margin-left:auto;font:600 15px var(--disp);letter-spacing:.03em;padding:5px 16px;background:var(--card2);color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50vw;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.stage.ok{background:rgba(75,224,138,.14);color:var(--green)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--mut);flex:none}
+.dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}.dot.err{background:var(--red);box-shadow:0 0 8px var(--red)}
+
+/* ---------- Navigation ---------- */
+nav{display:flex;gap:2px;padding:0 18px;border-bottom:1px solid var(--line);overflow-x:auto;background:rgba(7,12,19,.6)}
+nav button{position:relative;background:none;border:0;color:var(--mut);padding:13px 14px 11px;font:600 16px var(--disp);letter-spacing:.03em;cursor:pointer;white-space:nowrap}
+nav button:hover{color:var(--fg)}
+nav button.on{color:var(--cyan)}
+nav button.on::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+main{max-width:1160px;margin:0 auto;padding:22px}
 section{display:none}section.on{display:block}
+
+/* ---------- Panels ---------- */
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
-.card h2{font-size:15px;margin:0 0 12px;color:var(--fg)}
-.card h2 small{color:var(--mut);font-weight:400}
+.card{position:relative;background:linear-gradient(180deg,rgba(19,32,49,.55),rgba(13,21,32,.92));border:1px solid var(--line);padding:18px;
+  clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%)}
+.card::before{content:"";position:absolute;top:0;left:calc(100% - var(--cut) - 1.5px);width:calc(var(--cut)*1.4142 + 2px);height:2px;background:var(--line2);transform-origin:0 0;transform:rotate(45deg)}
+.card::after{content:"";position:absolute;left:-1px;top:-1px;width:34px;height:2px;background:var(--cyan);box-shadow:0 0 8px rgba(58,215,255,.6)}
+.card h2{font:700 19px/1.2 var(--disp);letter-spacing:.02em;margin:0 0 14px;color:var(--fg)}
+.card h2 small{font:500 14px var(--disp);color:var(--mut);letter-spacing:.01em}
 .mut{color:var(--mut)}
-.btn{background:var(--card2);border:1px solid var(--line);color:var(--fg);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
-.btn:hover{border-color:var(--mut)}
-.btn.pri{background:var(--acc2);border-color:var(--acc2);color:#fff}
-.btn.dang{color:var(--err)}
+.btn{background:var(--card2);border:0;color:var(--fg);padding:9px 20px;font:600 15px var(--disp);letter-spacing:.03em;cursor:pointer;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:background .15s,color .15s}
+.btn:hover{background:var(--line2)}
+.btn.pri{background:var(--cyan);color:#04121a}
+.btn.pri:hover{background:#7ae6ff}
+.btn.dang{color:var(--red)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-/* Checkliste */
+
+/* ---------- Checkliste (LEDs) ---------- */
 .checks{list-style:none;margin:0;padding:0}
-.checks li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.checks li{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid rgba(30,49,71,.7)}
 .checks li:last-child{border:0}
-.ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;background:var(--card2);color:var(--mut)}
-.ic.ok{background:rgba(63,185,80,.15);color:var(--acc)}
-.ic.bad{background:rgba(248,81,73,.15);color:var(--err)}
-.ic.warn{background:rgba(210,153,34,.15);color:var(--warn)}
+.ic{width:22px;height:22px;display:grid;place-items:center;font:700 13px var(--disp);flex:none;background:#0a121c;color:var(--mut);border:1px solid var(--line);transform:rotate(45deg)}
+.ic>*{transform:rotate(-45deg)}
+.ic.ok{background:rgba(75,224,138,.15);color:var(--green);border-color:var(--green);box-shadow:0 0 10px rgba(75,224,138,.35)}
+.ic.bad{background:rgba(255,77,94,.14);color:var(--red);border-color:var(--red);box-shadow:0 0 10px rgba(255,77,94,.35)}
+.ic.warn{background:rgba(255,176,32,.14);color:var(--amber);border-color:var(--amber)}
 .checks .hint{font-size:13px;color:var(--mut);margin-top:2px}
-.checks .hint.bad{color:#ffa198}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stat{background:var(--card2);border-radius:8px;padding:10px}
-.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.checks .hint.bad{color:#ff9aa4}
+
+/* ---------- Digitale Anzeigen ---------- */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.stat{background:var(--card);padding:10px 12px}
+.stat b{display:block;font:700 26px/1.1 var(--disp);font-variant-numeric:tabular-nums;color:var(--cyan);letter-spacing:.02em}
 .stat span{font-size:12px;color:var(--mut)}
-/* Live */
-.live{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:16px}
-@media(max-width:700px){.live{grid-template-columns:1fr}}
-#wheelsvg{width:100%;max-width:300px;display:block;margin:auto}
-#wheelsvg .rim{fill:none;stroke:#3a4350;stroke-width:14}
-#wheelsvg .spoke{stroke:#3a4350;stroke-width:12;stroke-linecap:round}
-#wheelsvg .hub{fill:#2a313c}
-#wheelsvg .mark{fill:var(--err)}
-.angle{text-align:center;font:600 22px var(--mono);margin-top:6px}
-.pedals{display:flex;gap:18px;justify-content:center;align-items:flex-end;height:180px}
-.ped{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
-.vbar{width:38px;height:140px;background:var(--card2);border-radius:6px;position:relative;overflow:hidden;border:1px solid var(--line)}
-.vbar i{position:absolute;left:0;right:0;bottom:0;background:var(--blue);height:0}
-.ped.gas .vbar i{background:var(--acc)}.ped.brk .vbar i{background:var(--err)}.ped.clu .vbar i{background:var(--warn)}
-.pills{display:flex;flex-wrap:wrap;gap:6px}
-.pill{padding:5px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font:600 12px var(--mono);color:var(--mut)}
-.pill.on{background:var(--blue);border-color:var(--blue);color:#0b1220}
-.hbar{height:10px;background:var(--card2);border-radius:5px;position:relative;overflow:hidden;border:1px solid var(--line)}
-.hbar i{position:absolute;top:0;bottom:0;left:0;background:var(--blue);width:0}
-/* Tabellen */
 table{width:100%;border-collapse:collapse}
-td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:12px;color:var(--mut);font-weight:500}
-td small{color:var(--mut);font-family:var(--mono);margin-left:4px}
-tr.held td{background:rgba(88,166,255,.08)}
-select,input[type=number]{background:var(--card2);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit}
-.cand{font:600 20px var(--mono);padding:12px;background:var(--card2);border-radius:8px;margin-bottom:10px;text-align:center}
-.cand.fresh{animation:flash .6s}
-@keyframes flash{from{background:rgba(88,166,255,.35)}to{background:var(--card2)}}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid rgba(30,49,71,.7);vertical-align:middle}
+th{font:600 13px var(--disp);color:var(--mut);letter-spacing:.03em}
+td small{color:var(--mut);font-family:var(--mono);margin-left:4px;font-size:11px}
+tr.held td{background:rgba(58,215,255,.08)}
+select,input[type=number]{background:#0a121c;color:var(--fg);border:1px solid var(--line2);padding:6px 8px;font:inherit}
+input[type=checkbox]{accent-color:var(--cyan);width:16px;height:16px}
+
+/* ---------- Live ---------- */
+.live{display:grid;gap:16px;grid-template-columns:minmax(260px,1fr) minmax(260px,1fr)}
+.live .span2{grid-column:1/-1}
+@media(max-width:760px){.live{grid-template-columns:1fr}}
+#gauge{width:100%;max-width:360px;display:block;margin:0 auto}
+#gauge .trk{fill:none;stroke:#132233;stroke-width:14;stroke-linecap:butt}
+#gauge .val{fill:none;stroke:var(--cyan);stroke-width:14;filter:drop-shadow(0 0 6px rgba(58,215,255,.7))}
+#gauge .tk{stroke:#35506d;stroke-width:2}#gauge .tk.maj{stroke:#7f93a8;stroke-width:3}
+#gauge .ndl{stroke:#fff;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 4px var(--cyan))}
+#gauge .lim{fill:var(--mut);font:600 11px var(--disp)}
+.readout{text-align:center;margin-top:-34px}
+.readout b{display:block;font:700 46px/1 var(--disp);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.readout span{font:500 14px var(--disp);color:var(--mut)}
+.pedals{display:flex;gap:22px;justify-content:center;align-items:flex-end}
+.ped{display:flex;flex-direction:column;align-items:center;gap:8px}
+.seg{display:flex;flex-direction:column-reverse;gap:3px;padding:4px;background:#060b11;border:1px solid var(--line)}
+.seg i{width:46px;height:7px;background:#121d2a}
+.seg i.on{background:var(--c);box-shadow:0 0 8px var(--c)}
+.ped b{font:700 24px/1 var(--disp);font-variant-numeric:tabular-nums;color:var(--c);min-width:3.2em;text-align:center}
+.ped span{font:600 14px var(--disp);color:var(--mut);letter-spacing:.02em}
+#trace{width:100%;height:230px;display:block;background:#060b11;border:1px solid var(--line)}
+.tlegend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font:600 14px var(--disp);color:var(--mut)}
+.tlegend span{display:flex;align-items:center;gap:7px}
+.tlegend i{width:18px;height:3px;background:var(--c);box-shadow:0 0 6px var(--c)}
+.tlegend b{color:var(--fg);font-variant-numeric:tabular-nums;min-width:3em}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{min-width:44px;text-align:center;padding:5px 10px;background:#0a121c;border:1px solid var(--line);font:700 14px var(--disp);color:var(--mut);letter-spacing:.03em}
+.pill.on{background:var(--cyan);border-color:var(--cyan);color:#04121a;box-shadow:0 0 12px rgba(58,215,255,.6)}
+.hbar{height:10px;background:#060b11;position:relative;overflow:hidden;border:1px solid var(--line)}
+.hbar i{position:absolute;top:0;bottom:0;left:0;background:var(--cyan);width:0}
+.angle{display:none}
+
+/* ---------- Mapping & Einstellungen ---------- */
+.cand{font:700 24px var(--disp);letter-spacing:.03em;padding:14px;background:#060b11;border:1px solid var(--line);margin-bottom:10px;text-align:center;color:var(--cyan)}
+.cand.fresh{animation:cflash .6s}
+@keyframes cflash{from{background:rgba(58,215,255,.25)}to{background:#060b11}}
 .xbtn{background:none;border:0;color:var(--mut);cursor:pointer;font-size:16px}
-.xbtn:hover{color:var(--err)}
-/* Einstellungen */
-.field{display:grid;grid-template-columns:1fr 130px;gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.xbtn:hover{color:var(--red)}
+.field{display:grid;grid-template-columns:1fr 130px;gap:4px 12px;align-items:center;padding:11px 0;border-bottom:1px solid rgba(30,49,71,.7)}
 .field:last-child{border:0}
 .field label{font-weight:500}
-.field .desc{grid-column:1/-1;font-size:12px;color:var(--mut)}
+.field .desc{grid-column:1/-1;font-size:13px;color:var(--mut)}
 .field .ctl{display:flex;align-items:center;gap:8px;justify-content:flex-end}
-.field input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--acc)}
-.field output{font:600 13px var(--mono);color:var(--blue)}
+.field input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--cyan)}
+.field output{font:700 17px var(--disp);color:var(--cyan);font-variant-numeric:tabular-nums}
+
+/* ---------- Hinweise, Code, Log ---------- */
+.note{border-left:3px solid var(--amber);background:rgba(255,176,32,.07);padding:10px 14px;margin:12px 0}
+.note.bad{border-color:var(--red);background:rgba(255,77,94,.07)}
+code{font-family:var(--mono);background:#0a121c;border:1px solid var(--line);padding:1px 6px;font-size:13px}
+pre.cmd{font-family:var(--mono);background:#060b11;border:1px solid var(--line);border-left:2px solid var(--cyan);padding:10px 12px;overflow-x:auto;font-size:13px}
+#log{font:12px/1.55 var(--mono);background:#04080d;border:1px solid var(--line);padding:12px;height:65vh;overflow:auto;white-space:pre-wrap;word-break:break-word;color:#b9c7d4}
+#log .WARNING{color:var(--amber)}#log .ERROR,#log .CRITICAL{color:var(--red)}#log .DEBUG{color:var(--mut)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--line2);border-left:3px solid var(--cyan);padding:10px 18px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9;font-weight:500}
+#toast.show{opacity:1}#toast.err{border-left-color:var(--red);color:#ff9aa4}
+.empty{color:var(--mut);padding:24px;text-align:center}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media(max-width:600px){header{flex-wrap:wrap;row-gap:10px;padding:10px 14px}.stage{order:5;flex-basis:100%;max-width:100%;margin-left:0;text-align:center}.brand small{display:none}main{padding:14px}}
 /* Anleitung */
 .guide ul{padding-left:22px;margin:6px 0}.guide ul li{margin:6px 0}
 .note{border-left:3px solid var(--warn);background:rgba(210,153,34,.08);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
@@ -104,8 +183,8 @@ pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut)}
 .legend span{display:flex;align-items:center;gap:6px}
 .lg{display:inline-block;width:22px;height:0;border-top:3px solid}
-.lg.data{border-color:var(--blue)}.lg.power{border-color:var(--warn);border-top-style:dashed}.lg.db9{border-color:#8b95a3}
-.sdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#5a6472}.sdot.ok{background:var(--acc)}
+.lg.data{border-color:var(--blue)}.lg.power{border-color:var(--warn);border-top-style:dashed}.lg.db9{border-color:#7f93a8}
+.sdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#3a4d63}.sdot.ok{background:var(--acc)}
 #wiring{width:100%;height:auto;display:block;margin:6px 0 4px}
 .wwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .swipe{display:none;text-align:center;font-size:12px;color:var(--mut)}
@@ -117,7 +196,7 @@ pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border
 .cables i{font-style:normal;color:var(--mut)}
 .cables span{color:var(--mut);font-size:12px;width:100%;padding-left:30px;margin-top:-2px}
 .cn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid;font-size:11px;flex:none}
-.cn.data{border-color:var(--blue)}.cn.power{border-color:var(--warn)}.cn.db9{border-color:#8b95a3}
+.cn.data{border-color:var(--blue)}.cn.power{border-color:var(--warn)}.cn.db9{border-color:#7f93a8}
 .pbar{height:6px;background:var(--card2);border-radius:3px;margin:12px 0 4px;overflow:hidden}
 .pbar i{display:block;height:100%;width:0;background:var(--acc);transition:width .4s}
 .steps{list-style:none;padding:0;margin:8px 0 0;counter-reset:st}
@@ -146,7 +225,7 @@ details.fold[open] summary{margin-bottom:8px}
 .vers{display:flex;align-items:center;gap:18px;margin:4px 0 14px}
 .vers div{display:flex;flex-direction:column;gap:2px}
 .vers span{font-size:12px;color:var(--mut)}
-.vers b{font:700 22px var(--mono)}
+.vers b{font:700 30px/1 var(--disp);letter-spacing:.02em}
 .vers .arrow{font-size:22px;color:var(--mut)}
 .ustate{padding:10px 12px;border-radius:8px;background:var(--card2);margin-bottom:14px;font-size:14px}
 .ustate.new{background:rgba(63,185,80,.12);color:var(--acc)}
@@ -158,17 +237,14 @@ details.fold[open] summary{margin-bottom:8px}
 .md pre{font-family:var(--mono);background:var(--card2);padding:8px 10px;border-radius:6px;overflow-x:auto;font-size:12px;color:var(--fg)}
 .md .note{margin:8px 0}
 .md a{color:var(--blue)}
-/* Log */
-#log{font:12px/1.5 var(--mono);background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:10px;height:65vh;overflow:auto;white-space:pre-wrap;word-break:break-word}
-#log .WARNING{color:var(--warn)}#log .ERROR,#log .CRITICAL{color:var(--err)}#log .DEBUG{color:var(--mut)}
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
-#toast.show{opacity:1}#toast.err{border-color:var(--err);color:#ffa198}
-.empty{color:var(--mut);padding:20px;text-align:center}
 </style>
 </head>
 <body>
 <header>
   <div class="brand"><img src="/icon-small.svg" alt="" width="28" height="28">WheelBridge <small>Lenkrad → Xbox</small></div>
+  <div class="shift sweep" id="shift" role="img" aria-label="Verbindungsstatus">
+    <i style="--c:var(--green)" title="Strom"></i><i style="--c:var(--green)" title="Lenkrad"></i><i style="--c:var(--amber)" title="Controller"></i><i style="--c:var(--amber)" title="Xbox"></i><i style="--c:var(--cyan)" title="Anmeldung"></i>
+  </div>
   <a id="upd-badge" class="upd" href="#update" hidden></a>
   <div id="stage" class="stage">verbinde …</div>
   <div id="conn" class="dot" title="Verbindung zum Pi"></div>
@@ -227,29 +303,43 @@ details.fold[open] summary{margin-bottom:8px}
   <div class="live">
     <div class="card">
       <h2>Lenkung</h2>
-      <svg id="wheelsvg" viewBox="-110 -110 220 220">
-        <g id="wheelrot">
-          <circle r="92" class="rim"/>
-          <path d="M-86 8 L-24 8 M24 8 L86 8 M0 26 L0 86" class="spoke"/>
-          <circle r="26" class="hub"/>
-          <rect x="-5" y="-101" width="10" height="18" rx="2" class="mark"/>
-        </g>
+      <svg id="gauge" viewBox="-130 -128 260 178" aria-hidden="true">
+        <path class="trk" id="g-trk"/>
+        <g id="g-ticks"></g>
+        <path class="val" id="g-val"/>
+        <line class="ndl" id="g-ndl" x1="0" y1="-62" x2="0" y2="-100"/>
+        <text class="lim" id="g-min" x="-104" y="46" text-anchor="middle"></text>
+        <text class="lim" id="g-max" x="104" y="46" text-anchor="middle"></text>
       </svg>
-      <div class="angle" id="angle">0°</div>
-      <div class="hbar" style="margin-top:10px"><i id="lxbar"></i></div>
-      <div class="mut" style="font-size:12px;margin-top:4px;text-align:center">Stick-Ausschlag (LX)</div>
+      <div class="readout"><b id="angle-big">0°</b><span id="angle-sub">Lenkwinkel</span></div>
+      <div class="angle" id="angle"></div>
     </div>
     <div class="card">
-      <h2>Pedale & Knöpfe</h2>
+      <h2>Pedale <small id="gear"></small></h2>
       <div class="pedals">
-        <div class="ped clu"><div class="vbar"><i id="p-clu"></i></div>Kupplung</div>
-        <div class="ped brk"><div class="vbar"><i id="p-brk"></i></div>Bremse (LT)</div>
-        <div class="ped gas"><div class="vbar"><i id="p-gas"></i></div>Gas (RT)</div>
+        <div class="ped" style="--c:var(--amber)"><b id="v-clu">0</b><div class="seg" id="p-clu"></div><span>Kupplung</span></div>
+        <div class="ped" style="--c:var(--red)"><b id="v-brk">0</b><div class="seg" id="p-brk"></div><span>Bremse</span></div>
+        <div class="ped" style="--c:var(--green)"><b id="v-gas">0</b><div class="seg" id="p-gas"></div><span>Gas</span></div>
       </div>
-      <h2 style="margin-top:18px">Xbox-Knöpfe <small id="gear"></small></h2>
+    </div>
+    <div class="card span2">
+      <h2>Telemetrie <small>letzte 10 Sekunden</small></h2>
+      <canvas id="trace"></canvas>
+      <div class="tlegend">
+        <span style="--c:var(--cyan)"><i></i>Lenkung <b id="l-st">0°</b></span>
+        <span style="--c:var(--green)"><i></i>Gas <b id="l-th">0 %</b></span>
+        <span style="--c:var(--red)"><i></i>Bremse <b id="l-br">0 %</b></span>
+        <span style="--c:var(--amber)"><i></i>Kupplung <b id="l-cl">0 %</b></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Xbox-Knöpfe</h2>
       <div class="pills" id="pad"></div>
-      <h2 style="margin-top:18px">Vibration</h2>
-      <div class="hbar"><i id="rumblebar" style="background:var(--warn)"></i></div>
+    </div>
+    <div class="card">
+      <h2>Vibration</h2>
+      <div class="hbar"><i id="rumblebar" style="background:var(--amber);box-shadow:0 0 10px var(--amber)"></i></div>
+      <p class="mut" style="font-size:13px;margin:10px 0 0">Rumble-Stärke, die das Spiel gerade ans Lenkrad schickt.</p>
     </div>
   </div>
 </section>
@@ -300,43 +390,43 @@ details.fold[open] summary{margin-bottom:8px}
     </div>
     <div class="wwrap"><svg id="wiring" viewBox="0 0 1000 480" role="img" aria-label="Verkabelungsplan">
       <defs>
-        <marker id="arD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#58a6ff"/></marker>
-        <marker id="arP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#d29922"/></marker>
-        <marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b95a3"/></marker>
+        <marker id="arD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3ad7ff"/></marker>
+        <marker id="arP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb020"/></marker>
+        <marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7f93a8"/></marker>
         <linearGradient id="pcb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d6b41"/><stop offset="1" stop-color="#134a2d"/></linearGradient>
       </defs>
       <style>
-        #wiring .bx{fill:#1c222b;stroke:#3a4350;stroke-width:1.5}
-        #wiring .bx.x{stroke:#58a6ff}#wiring .bx.pw{stroke:#d29922}#wiring .bx.sp{stroke:#8b95a3}
-        #wiring .t{fill:#e6e9ee;font:600 15px system-ui,sans-serif}
-        #wiring .s{fill:#8b95a3;font:12px system-ui,sans-serif}
-        #wiring .w{fill:#ff7b72;font:600 12px system-ui,sans-serif}
-        #wiring .pl{fill:#c9d1d9;font:600 10px system-ui,sans-serif}
-        #wiring .port{fill:#8b95a3;font:11px system-ui,sans-serif}
+        #wiring .bx{fill:#101a27;stroke:#26405a;stroke-width:1.5}
+        #wiring .bx.x{stroke:#3ad7ff}#wiring .bx.pw{stroke:#ffb020}#wiring .bx.sp{stroke:#7f93a8}
+        #wiring .t{fill:#dbe6f0;font:700 16px Rajdhani,system-ui,sans-serif}
+        #wiring .s{fill:#7f93a8;font:13px Barlow,system-ui,sans-serif}
+        #wiring .w{fill:#ff6b7a;font:600 13px Barlow,system-ui,sans-serif}
+        #wiring .pl{fill:#c4d3e0;font:700 11px Rajdhani,system-ui,sans-serif}
+        #wiring .port{fill:#7f93a8;font:600 12px Rajdhani,system-ui,sans-serif}
         #wiring .cable path{fill:none;stroke-width:3;stroke-linejoin:round;transition:stroke-width .15s}
-        #wiring .cable.data path{stroke:#58a6ff}
-        #wiring .cable.power path{stroke:#d29922;stroke-dasharray:7 5}
-        #wiring .cable.db9 path{stroke:#8b95a3}
-        #wiring .cable circle{fill:#0e1116;stroke-width:2}
-        #wiring .cable.data circle{stroke:#58a6ff}#wiring .cable.power circle{stroke:#d29922}#wiring .cable.db9 circle{stroke:#8b95a3}
-        #wiring .cable text{fill:#e6e9ee;font:700 12px system-ui,sans-serif;text-anchor:middle;dominant-baseline:central}
+        #wiring .cable.data path{stroke:#3ad7ff}
+        #wiring .cable.power path{stroke:#ffb020;stroke-dasharray:7 5}
+        #wiring .cable.db9 path{stroke:#7f93a8}
+        #wiring .cable circle{fill:#070c13;stroke-width:2}
+        #wiring .cable.data circle{stroke:#3ad7ff}#wiring .cable.power circle{stroke:#ffb020}#wiring .cable.db9 circle{stroke:#7f93a8}
+        #wiring .cable text{fill:#dbe6f0;font:700 13px Rajdhani,system-ui,sans-serif;text-anchor:middle;dominant-baseline:central}
         #wiring .cable{transition:opacity .15s;cursor:pointer}
         #wiring.focus .cable{opacity:.15}
         #wiring.focus .cable.hl{opacity:1}
         #wiring .cable.hl path{stroke-width:5}
         #wiring .cable.hl.data path{stroke-dasharray:10 6;animation:flow .6s linear infinite}
         @keyframes flow{to{stroke-dashoffset:-16}}
-        #wiring .sd{stroke:#0e1116;stroke-width:2}
-        #wiring .sd.ok{fill:#3fb950}#wiring .sd.bad{fill:#f85149}#wiring .sd.warn{fill:#d29922}#wiring .sd.unk{fill:#5a6472}
+        #wiring .sd{stroke:#070c13;stroke-width:2}
+        #wiring .sd.ok{fill:#4be08a}#wiring .sd.bad{fill:#ff4d5e}#wiring .sd.warn{fill:#ffb020}#wiring .sd.unk{fill:#3a4d63}
       </style>
 
       <!-- ===== Reihenfolge-Hinweis ===== -->
       <text class="t" x="20" y="56">Reihenfolge</text>
       <g class="s" style="font-size:13px">
-        <text x="20" y="84"><tspan style="fill:#d29922;font-weight:700">①</tspan> Strom: Netzteil → Splitter → Pi</text>
-        <text x="20" y="108"><tspan style="fill:#58a6ff;font-weight:700">②</tspan> Lenkrad + Controller an den Pi</text>
-        <text x="20" y="132"><tspan style="fill:#58a6ff;font-weight:700">③</tspan> Mapping im Dashboard prüfen</text>
-        <text x="20" y="156"><tspan style="fill:#3fb950;font-weight:700">④</tspan> zuletzt: Xbox an den Splitter</text>
+        <text x="20" y="84"><tspan style="fill:#ffb020;font-weight:700">①</tspan> Strom: Netzteil → Splitter → Pi</text>
+        <text x="20" y="108"><tspan style="fill:#3ad7ff;font-weight:700">②</tspan> Lenkrad + Controller an den Pi</text>
+        <text x="20" y="132"><tspan style="fill:#3ad7ff;font-weight:700">③</tspan> Mapping im Dashboard prüfen</text>
+        <text x="20" y="156"><tspan style="fill:#4be08a;font-weight:700">④</tspan> zuletzt: Xbox an den Splitter</text>
       </g>
       <text class="s" x="20" y="186" style="font-size:11px">Zahlen an den Kabeln: siehe Liste unten.</text>
 
@@ -344,7 +434,7 @@ details.fold[open] summary{margin-bottom:8px}
       <text class="t" x="330" y="56">Raspberry Pi 4</text>
       <circle id="dot-pi" class="sd ok" cx="600" cy="51" r="6"/>
       <rect x="330" y="70" width="280" height="190" rx="10" fill="url(#pcb)" stroke="#2ea043" stroke-width="1.5"/>
-      <g fill="#0e1116"><circle cx="348" cy="88" r="6"/><circle cx="348" cy="242" r="6"/><circle cx="526" cy="88" r="6"/><circle cx="526" cy="242" r="6"/></g>
+      <g fill="#070c13"><circle cx="348" cy="88" r="6"/><circle cx="348" cy="242" r="6"/><circle cx="526" cy="88" r="6"/><circle cx="526" cy="242" r="6"/></g>
       <rect x="362" y="74" width="158" height="18" rx="2" fill="#111"/>
       <g fill="#d4a017">
         <rect x="366" y="77" width="4" height="4"/><rect x="374" y="77" width="4" height="4"/><rect x="382" y="77" width="4" height="4"/><rect x="390" y="77" width="4" height="4"/><rect x="398" y="77" width="4" height="4"/><rect x="406" y="77" width="4" height="4"/><rect x="414" y="77" width="4" height="4"/><rect x="422" y="77" width="4" height="4"/><rect x="430" y="77" width="4" height="4"/><rect x="438" y="77" width="4" height="4"/><rect x="446" y="77" width="4" height="4"/><rect x="454" y="77" width="4" height="4"/><rect x="462" y="77" width="4" height="4"/><rect x="470" y="77" width="4" height="4"/><rect x="478" y="77" width="4" height="4"/><rect x="486" y="77" width="4" height="4"/><rect x="494" y="77" width="4" height="4"/><rect x="502" y="77" width="4" height="4"/><rect x="510" y="77" width="4" height="4"/>
@@ -353,18 +443,18 @@ details.fold[open] summary{margin-bottom:8px}
       <rect x="405" y="132" width="60" height="60" rx="4" fill="#b8bec6"/><text x="435" y="166" text-anchor="middle" style="font:700 9px system-ui;fill:#30363d">BCM2711</text>
       <rect x="482" y="138" width="40" height="48" rx="2" fill="#24292f"/>
       <!-- Ports rechts: LAN, USB 3 (blau), USB 2 (schwarz) -->
-      <rect x="584" y="80" width="64" height="50" rx="3" fill="#c0c4ca" stroke="#8b95a3"/><text class="pl" x="616" y="109" text-anchor="middle" style="fill:#30363d">LAN</text>
-      <rect x="590" y="138" width="58" height="54" rx="3" fill="#c0c4ca" stroke="#8b95a3"/>
+      <rect x="584" y="80" width="64" height="50" rx="3" fill="#c0c4ca" stroke="#7f93a8"/><text class="pl" x="616" y="109" text-anchor="middle" style="fill:#30363d">LAN</text>
+      <rect x="590" y="138" width="58" height="54" rx="3" fill="#c0c4ca" stroke="#7f93a8"/>
       <rect x="600" y="148" width="40" height="13" rx="2" fill="#1f6feb"/><rect x="600" y="169" width="40" height="13" rx="2" fill="#1f6feb"/>
-      <rect x="590" y="198" width="58" height="56" rx="3" fill="#c0c4ca" stroke="#3fb950" stroke-width="2"/>
+      <rect x="590" y="198" width="58" height="56" rx="3" fill="#c0c4ca" stroke="#4be08a" stroke-width="2"/>
       <rect x="600" y="208" width="40" height="13" rx="2" fill="#24292f"/><rect x="600" y="230" width="40" height="13" rx="2" fill="#24292f"/>
       <text class="port" x="574" y="168" text-anchor="end">USB 3</text>
-      <text class="port" x="574" y="230" text-anchor="end" style="fill:#3fb950">USB 2 ✓</text>
+      <text class="port" x="574" y="230" text-anchor="end" style="fill:#4be08a">USB 2 ✓</text>
       <!-- Ports unten: USB-C, 2× micro-HDMI, Audio -->
-      <rect x="352" y="252" width="30" height="15" rx="5" fill="#c0c4ca" stroke="#3fb950" stroke-width="2"/>
+      <rect x="352" y="252" width="30" height="15" rx="5" fill="#c0c4ca" stroke="#4be08a" stroke-width="2"/>
       <rect x="400" y="254" width="20" height="11" rx="2" fill="#c0c4ca"/><rect x="434" y="254" width="20" height="11" rx="2" fill="#c0c4ca"/>
-      <circle cx="492" cy="259" r="7" fill="#24292f" stroke="#8b95a3"/>
-      <text class="port" x="390" y="284" style="fill:#3fb950">USB-C → zur Xbox</text>
+      <circle cx="492" cy="259" r="7" fill="#24292f" stroke="#7f93a8"/>
+      <text class="port" x="390" y="284" style="fill:#4be08a">USB-C → zur Xbox</text>
 
       <!-- ===== linke Seite: Xbox, Netzteil, Splitter ===== -->
       <rect class="bx x" x="20" y="310" width="170" height="70" rx="10"/>
@@ -580,7 +670,7 @@ function renderChecks(s){
     if (ok === true && warn) { cls = "warn"; sym = "!"; hint = c.whint; }
     else if (ok === true) { cls = "ok"; sym = "✓"; }
     else if (ok === false) { cls = blocked ? "" : "bad"; sym = blocked ? "·" : "✗"; hint = blocked ? "" : (typeof c.hint === "function" ? c.hint(s) : c.hint); blocked = true; }
-    return `<li><div class="ic ${cls}">${sym}</div><div><div>${esc(c.t)}</div>${hint ? `<div class="hint ${cls === "bad" ? "bad" : ""}">${esc(hint)}</div>` : ""}</div></li>`;
+    return `<li><div class="ic ${cls}"><span>${sym}</span></div><div><div>${esc(c.t)}</div>${hint ? `<div class="hint ${cls === "bad" ? "bad" : ""}">${esc(hint)}</div>` : ""}</div></li>`;
   }).join("");
 }
 
@@ -604,18 +694,86 @@ function axisNorm(s, role){
   const inv = role === "steering" ? get(cfg, "steering.invert") : get(cfg, `pedals.${role}.invert`);
   return inv ? 1 - n : n;
 }
-function renderLive(s){
-  const deg = get(cfg, "wheel.steering_degrees") || 270, lx = s.pad.lx / 32767;
-  $("#wheelrot").setAttribute("transform", `rotate(${(lx * deg / 2).toFixed(1)})`);
-  $("#angle").textContent = `${Math.round(lx * deg / 2)}°`;
-  const b = $("#lxbar"); b.style.left = (lx < 0 ? 50 + lx * 50 : 50) + "%"; b.style.width = Math.abs(lx) * 50 + "%";
-  $("#p-gas").style.height = s.pad.rt / 10.23 + "%";
-  $("#p-brk").style.height = s.pad.lt / 10.23 + "%";
-  const c = axisNorm(s, "clutch"); $("#p-clu").style.height = (c == null ? 0 : c * 100) + "%";
-  $$("#pad .pill").forEach(el => el.classList.toggle("on", !!(s.pad.buttons & BITS[el.dataset.b])));
-  $("#gear").textContent = s.raw?.gear != null ? `– H-Shifter: Gang ${s.raw.gear === 0 ? "R" : s.raw.gear} (geschätzt)` : "";
-  $("#rumblebar").style.width = Math.min(100, s.rumble * 100) + "%";
+/* Lenkwinkel-Bogen: ±120° Zeigerweg für den eingestellten Lenkwinkel */
+const G = {r: 104, span: 120};
+const gpt = (deg, r) => [r * Math.sin(deg * Math.PI / 180), -r * Math.cos(deg * Math.PI / 180)];
+function garc(a0, a1, r){
+  if (Math.abs(a1 - a0) < 0.05) return "";
+  const [x0, y0] = gpt(a0, r), [x1, y1] = gpt(a1, r);
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${Math.abs(a1 - a0) > 180 ? 1 : 0} ${a1 > a0 ? 1 : 0} ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 }
+$("#g-trk").setAttribute("d", garc(-G.span, G.span, G.r));
+$("#g-ticks").innerHTML = Array.from({length: 25}, (_, i) => {
+  const a = -G.span + i * G.span / 12, maj = i % 6 === 0;
+  const [x0, y0] = gpt(a, G.r - 11 - (maj ? 9 : 4)), [x1, y1] = gpt(a, G.r - 11);
+  return `<line class="tk${maj ? " maj" : ""}" x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"/>`;
+}).join("");
+/* Segment-Pedale */
+const NSEG = 22;
+for (const id of ["p-clu", "p-brk", "p-gas"]) $("#" + id).innerHTML = "<i></i>".repeat(NSEG);
+function setSeg(id, v){ const n = Math.round(Math.max(0, Math.min(1, v || 0)) * NSEG); [...$("#" + id).children].forEach((el, i) => el.classList.toggle("on", i < n)); }
+/* Telemetrie-Puffer (10 s) */
+const TRACE = [], TRACE_MS = 10000;
+function sampleTrace(s){
+  const deg = get(cfg, "wheel.steering_degrees") || 270;
+  TRACE.push({t: performance.now(), st: s.pad.lx / 32767, th: s.pad.rt / 1023, br: s.pad.lt / 1023, cl: axisNorm(s, "clutch") ?? 0, deg});
+  while (TRACE.length && TRACE[0].t < performance.now() - TRACE_MS - 500) TRACE.shift();
+}
+function drawTrace(){
+  const c = $("#trace"); if (!c.offsetParent) return;
+  const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+  if (c.width !== w * dpr || c.height !== h * dpr) { c.width = w * dpr; c.height = h * dpr; }
+  const g = c.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  // Raster: Sekunden senkrecht, 25 %-Linien waagrecht
+  g.strokeStyle = "rgba(58,215,255,.07)"; g.lineWidth = 1;
+  for (let i = 1; i < 10; i++) { const x = Math.round(w * i / 10) + .5; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+  for (let i = 1; i < 4; i++) { const y = Math.round(h * i / 4) + .5; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+  g.strokeStyle = "rgba(58,215,255,.22)"; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(0, h / 2 + .5); g.lineTo(w, h / 2 + .5); g.stroke(); g.setLineDash([]);
+  g.fillStyle = css("--mut"); g.font = "500 11px Rajdhani, sans-serif";
+  g.fillText("−10 s", 6, h - 6); g.textAlign = "right"; g.fillText("jetzt", w - 6, h - 6); g.textAlign = "left";
+  const now = performance.now(), X = t => w - (now - t) / TRACE_MS * w, pad = 6;
+  const line = (key, color, map) => {
+    g.strokeStyle = color; g.lineWidth = 2; g.shadowColor = color; g.shadowBlur = 6; g.beginPath();
+    TRACE.forEach((p, i) => { const x = X(p.t), y = map(p[key]); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+    g.stroke(); g.shadowBlur = 0;
+  };
+  const up = v => h - pad - v * (h - 2 * pad);
+  line("cl", css("--amber"), up); line("br", css("--red"), up); line("th", css("--green"), up);
+  line("st", css("--cyan"), v => h / 2 - v * (h / 2 - pad));
+}
+function renderLive(s){
+  const deg = get(cfg, "wheel.steering_degrees") || 270, lx = s.pad.lx / 32767, ang = lx * deg / 2;
+  const a = Math.max(-1, Math.min(1, lx)) * G.span;
+  $("#g-val").setAttribute("d", a >= 0 ? garc(0, a, G.r) : garc(a, 0, G.r));
+  $("#g-ndl").setAttribute("transform", `rotate(${a.toFixed(1)})`);
+  $("#g-min").textContent = `−${deg / 2}°`; $("#g-max").textContent = `+${deg / 2}°`;
+  const angTxt = `${ang > 0.5 ? "+" : ""}${Math.round(ang)}°`;
+  $("#angle-big").textContent = angTxt; $("#angle").textContent = angTxt;
+  $("#angle-sub").textContent = `Lenkwinkel bei ${deg}° Gesamtweg`;
+  const thr = s.pad.rt / 1023, brk = s.pad.lt / 1023, clu = axisNorm(s, "clutch");
+  setSeg("p-gas", thr); setSeg("p-brk", brk); setSeg("p-clu", clu);
+  $("#v-gas").textContent = Math.round(thr * 100); $("#v-brk").textContent = Math.round(brk * 100);
+  $("#v-clu").textContent = clu == null ? "–" : Math.round(clu * 100);
+  $("#l-st").textContent = angTxt; $("#l-th").textContent = Math.round(thr * 100) + " %";
+  $("#l-br").textContent = Math.round(brk * 100) + " %"; $("#l-cl").textContent = clu == null ? "–" : Math.round(clu * 100) + " %";
+  $$("#pad .pill").forEach(el => el.classList.toggle("on", !!(s.pad.buttons & BITS[el.dataset.b])));
+  $("#gear").textContent = s.raw?.gear != null ? `H-Shifter: Gang ${s.raw.gear === 0 ? "R" : s.raw.gear} (geschätzt)` : "";
+  $("#rumblebar").style.width = Math.min(100, s.rumble * 100) + "%";
+  drawTrace();
+}
+/* Shift-Lights: eine LED pro Verbindungsstufe */
+let shiftAll = false;
+function renderShift(s){
+  const st = [s.checks.undervoltage_now == null ? true : !s.checks.undervoltage_now, s.wheel.connected, s.controller.connected, s.xbox.enabled, s.xbox.armed];
+  const first = st.findIndex(v => !v), leds = $$("#shift i");
+  leds.forEach((el, i) => { el.classList.toggle("on", !!st[i]); el.classList.toggle("bad", i === first && i < 3); });
+  const all = first === -1, box = $("#shift");
+  if (all && !shiftAll) { box.classList.remove("all"); void box.offsetWidth; box.classList.add("all"); }
+  shiftAll = all;
+  box.title = ["Strom", "Lenkrad", "Controller", "Xbox", "Anmeldung"].map((n, i) => `${st[i] ? "✓" : "–"} ${n}`).join("\n");
+}
+$("#shift").addEventListener("animationend", e => { if (e.animationName === "sweep") $("#shift").classList.remove("sweep"); });
 
 /* ---------- Mapping ---------- */
 $("#key-target").innerHTML =
@@ -936,18 +1094,19 @@ $("#log-clear").addEventListener("click", () => $("#log").innerHTML = "");
 function render(){
   queued = false;
   if (!st || !cfg) return;
-  renderOverview(st); renderLive(st); renderMapping(st); renderGuide(st); renderUpdateBadge(st);
+  renderOverview(st); renderLive(st); renderMapping(st); renderGuide(st); renderUpdateBadge(st); renderShift(st);
 }
 function connect(){
   const es = new EventSource("/api/stream");
   es.onopen = () => { $("#conn").className = "dot ok"; };
   es.onerror = () => { $("#conn").className = "dot err"; $("#stage").textContent = "keine Verbindung zum Pi"; $("#stage").classList.remove("ok"); };
   es.onmessage = e => {
-    const d = JSON.parse(e.data); st = d.status; appendLog(d.log);
+    const d = JSON.parse(e.data); st = d.status; appendLog(d.log); if (cfg) sampleTrace(st);
     if (!queued) { queued = true; requestAnimationFrame(render); }
   };
 }
 showTab(location.hash.slice(1) || "uebersicht");
+(function loop(){ if ($("#tab-live").classList.contains("on")) drawTrace(); requestAnimationFrame(loop); })();
 loadUpdate(false); loadCfg().then(connect).catch(e => { toast("Konfiguration nicht ladbar: " + e.message, true); connect(); });
 </script>
 </body>

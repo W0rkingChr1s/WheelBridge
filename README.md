@@ -46,7 +46,9 @@ Xbox One und Series akzeptieren nur Controller mit Microsofts Sicherheitschip. D
 ## Features
 
 - Ein-Zeilen-Installer, **Updates per Knopfdruck im Dashboard** (prüft GitHub-Releases), CLI und Systemcheck (`wheelbridge doctor`)
-- Web-Dashboard ohne externe Abhängigkeiten (`http://<pi-ip>:8080`)
+- Web-Dashboard im Telemetrie-Look, ohne externe Abhängigkeiten (`http://<pi-ip>:8080`)
+  - **Live-Telemetrie:** Schrieb der letzten 10 Sekunden, Lenkwinkel-Bogen, LED-Pedale
+  - **Shift-Lights** zeigen auf einen Blick, wie weit die Verbindung steht
   - **Live-Checkliste** für die Inbetriebnahme: Treiber, Strom, Geräte, Xbox, Handshake
   - **Live-Ansicht**: Lenkwinkel, Pedale, Knöpfe, Vibration
   - **Mapping-Assistent**: Pedal treten bzw. Knopf drücken und dann zuweisen
@@ -158,7 +160,7 @@ Am meisten hilft ein **Testbericht mit echter Hardware**. Details stehen in [CON
 
 ## Lizenz
 
-[MIT](LICENSE). WheelBridge steht in keiner Verbindung zu Microsoft oder Logitech. Xbox und Logitech sind Marken der jeweiligen Inhaber.
+[MIT](LICENSE). Die eingebetteten Schriften Rajdhani und Barlow stehen unter der SIL Open Font License (siehe `bridge/web/fonts/`). WheelBridge steht in keiner Verbindung zu Microsoft oder Logitech. Xbox und Logitech sind Marken der jeweiligen Inhaber.
 
 ## Danksagung
 

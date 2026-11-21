@@ -4,6 +4,17 @@ Alle nennenswerten Änderungen an WheelBridge. Format nach [Keep a Changelog](ht
 
 ## [Unveröffentlicht]
 
+## [0.5.0] – 2026-11-21
+
+### Neu
+- **Dashboard im Telemetrie-Look**, angelehnt an die Monitore am Kommandostand der Boxengasse:
+  - **Shift-Lights im Kopf:** fünf LEDs für Strom, Lenkrad, Controller, Xbox und Anmeldung. Eine fehlende Stufe blinkt rot, sind alle erreicht, leuchten sie einmal kurz auf.
+  - **Live-Tab:** Telemetrie-Schrieb der letzten 10 Sekunden (Lenkung, Gas, Bremse, Kupplung), Lenkwinkel-Bogen mit Skala und LED-Segment-Pedale.
+  - **Farben mit Bedeutung:** Gas grün, Bremse rot, Lenkung cyan, Kupplung amber, wie in Telemetrie-Software üblich.
+  - **Panels und Schrift:** abgeschrägte Ecken, Schriften Rajdhani und Barlow (SIL OFL), lokal eingebettet – das Dashboard braucht weiterhin kein Internet.
+- Bewegungen werden bei aktivierter Systemeinstellung „Bewegung reduzieren“ abgeschaltet.
+
+
 ## [0.4.0] – 2026-11-21
 
 Erste Version, die an echter Hardware getestet wurde: Raspberry Pi 4 (Trixie), Xbox-One-S-Controller, Logitech G27, Xbox One X.
@@ -39,6 +50,7 @@ Erste öffentliche Version. **Experimentell.** Getestet sind Protokoll-Logik, Ma
 - **CLI** `wheelbridge` mit `doctor`-Systemcheck, `sniff`-Paketmitschnitt und `probe`.
 - **Doku:** Installationsanleitung, Verkabelung, Branding.
 
-[Unveröffentlicht]: https://github.com/W0rkingChr1s/WheelBridge/compare/v0.4.0...HEAD
+[Unveröffentlicht]: https://github.com/W0rkingChr1s/WheelBridge/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/W0rkingChr1s/WheelBridge/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/W0rkingChr1s/WheelBridge/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/W0rkingChr1s/WheelBridge/releases/tag/v0.3.0
