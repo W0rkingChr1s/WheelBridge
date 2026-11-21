@@ -4,3 +4,4 @@
 scripts/wheelbridge text eol=lf
 *.png binary
 *.ico binary
+*.woff2 binary
