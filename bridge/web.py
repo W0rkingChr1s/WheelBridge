@@ -83,6 +83,11 @@ def make_handler(bridge, ringlog):
                 self._json(bridge.status())
             elif path == "/api/config":
                 self._json({"effective": bridge.cfg, "overrides": bridge.overrides})
+            elif path == "/api/update":
+                self._json(bridge.updater.status())
+            elif path == "/api/update/log":
+                self._json({"log": bridge.updater.read_log(), "running": bridge.updater.is_running(),
+                            "version": bridge.updater.state["current"]})
             elif path == "/api/log":
                 self._json(ringlog.since(0))
             elif path == "/api/stream":
@@ -121,6 +126,10 @@ def make_handler(bridge, ringlog):
                 elif path == "/api/action/rumble":
                     bridge.test_rumble()
                     self._json({"ok": True})
+                elif path == "/api/update/check":
+                    self._json({"ok": True, **bridge.updater.check()})
+                elif path == "/api/update/apply":
+                    self._json({"ok": True, **bridge.updater.apply(self._body().get("tag"))})
                 elif path == "/api/action/reconnect":
                     bridge.need_reset.set()
                     self._json({"ok": True})

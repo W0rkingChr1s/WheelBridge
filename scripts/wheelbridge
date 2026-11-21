@@ -65,7 +65,19 @@ case "$cmd" in
     echo "Dashboard-Einstellungen gelöscht – es gilt wieder $CONF."
     systemctl is-active -q "$SVC" && systemctl restart "$SVC" || true ;;
   update)
-    run_installer --update "$@" ;;
+    case "${1:-}" in
+      --check)
+        exec python3 "$DIR/bridge/updater.py" --check ;;
+      --main)
+        shift; ref="main" ;;
+      *)
+        if ! ref="$(python3 "$DIR/bridge/updater.py" --latest-tag 2>/dev/null)"; then
+          echo "Kein Release auf GitHub gefunden – aktualisiere auf den Entwicklungsstand (main)."
+          ref="main"
+        fi ;;
+    esac
+    echo "Aktualisiere WheelBridge $(cat "$DIR/VERSION" 2>/dev/null) -> $ref"
+    run_installer --update --branch "$ref" "$@" ;;
   uninstall)
     run_installer --uninstall "$@" ;;
   version|--version|-v)
@@ -87,7 +99,9 @@ WheelBridge – Lenkrad an Xbox
 
   wheelbridge config        $CONF bearbeiten
   wheelbridge reset         Dashboard-Einstellungen verwerfen
-  wheelbridge update        auf neueste Version aktualisieren
+  wheelbridge update        auf das neueste Release aktualisieren
+  wheelbridge update --check  nur prüfen, ob ein Update verfügbar ist
+  wheelbridge update --main   auf den Entwicklungsstand (main) aktualisieren
   wheelbridge uninstall [--purge]
   wheelbridge version
 EOF

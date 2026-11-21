@@ -85,6 +85,12 @@ enabled = true
 bind = "0.0.0.0"         # keine Anmeldung! Nur im eigenen Netz, sonst "127.0.0.1" + SSH-Tunnel
 port = 8080
 
+[update]
+auto_check = true          # regelmäßig auf GitHub nach neuen Releases schauen
+check_interval_h = 12
+include_prerelease = true  # auch Vorabversionen anbieten (aktuell sind alle Releases Vorabversionen)
+repo = "W0rkingChr1s/WheelBridge"
+
 [gadget]
 max_speed = "full-speed" # echter Controller ist Full-Speed
 fs_interval = 4

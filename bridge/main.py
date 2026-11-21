@@ -33,6 +33,7 @@ from ffb import FakeFFB
 from ffs import FunctionFS
 from gadget import Gadget
 from mapper import Mapper
+from updater import Updater
 from web import RingLog, start_web
 from wheel import Wheel
 
@@ -86,6 +87,7 @@ class Bridge:
         self.ctrl = XboxController(vid=c.get("vid", 0x045E), pid=c.get("pid"))
         self.wheel = Wheel(self.cfg.get("wheel", {}).get("name_match", "G27"))
         self.ffb = FakeFFB(self.wheel)
+        self.updater = Updater(self.cfg.get("update", {}))
         self.mapper = None
         self.gadget = None
         self.ffs = None
@@ -171,6 +173,7 @@ class Bridge:
     # ---- Lebenszyklus ---------------------------------------------------
     def start(self):
         self.ffb.start()
+        self.updater.start_auto_check()
         for target, name in ((self._supervisor, "supervisor"), (self._wheel_loop, "wheel"),
                              (self._sender_loop, "sender")):
             threading.Thread(target=target, name=name, daemon=True).start()
@@ -461,6 +464,8 @@ class Bridge:
             "pad": asdict(self._compose()),
             "raw": m.debug() if m else None,
             "rumble": round(self.ffb.amp, 3),
+            "version": self.updater.state["current"],
+            "update": {k: self.updater.state[k] for k in ("available", "latest")},
         }
 
 

@@ -124,8 +124,14 @@ Die Checkliste sollte jetzt **„Mit Xbox verbunden“ → „Handshake mit Cont
 
 ## 6. Update, Deinstallation, Befehle
 
+**Am einfachsten im Dashboard:** Ist auf GitHub ein neues Release erschienen, erscheint im Header „Update … verfügbar“. Im Tab **Update** siehst du, was neu ist, und startest das Update per Knopfdruck. Der Dienst startet danach neu, Einstellungen und Mapping bleiben erhalten.
+
+Oder im Terminal:
+
 ```bash
-wheelbridge update               # neueste Version von GitHub; Konfiguration bleibt erhalten
+wheelbridge update               # neuestes Release von GitHub; Konfiguration bleibt erhalten
+wheelbridge update --check       # nur prüfen
+wheelbridge update --main        # Entwicklungsstand (main) statt Release
 wheelbridge uninstall            # entfernen, Konfiguration bleibt
 wheelbridge uninstall --purge    # alles entfernen
 ```

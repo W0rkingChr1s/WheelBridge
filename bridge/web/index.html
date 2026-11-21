@@ -95,12 +95,69 @@ select,input[type=number]{background:var(--card2);color:var(--fg);border:1px sol
 .field input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--acc)}
 .field output{font:600 13px var(--mono);color:var(--blue)}
 /* Anleitung */
-.guide svg{width:100%;height:auto;display:block}
-.guide ol{padding-left:22px}.guide li{margin:8px 0}
+.guide ul{padding-left:22px;margin:6px 0}.guide ul li{margin:6px 0}
 .note{border-left:3px solid var(--warn);background:rgba(210,153,34,.08);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
 .note.bad{border-color:var(--err);background:rgba(248,81,73,.08)}
 code{font-family:var(--mono);background:var(--card2);padding:1px 6px;border-radius:4px;font-size:13px}
 pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border-radius:8px;overflow-x:auto;font-size:13px}
+/* Anleitung */
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut)}
+.legend span{display:flex;align-items:center;gap:6px}
+.lg{display:inline-block;width:22px;height:0;border-top:3px solid}
+.lg.data{border-color:var(--blue)}.lg.power{border-color:var(--warn);border-top-style:dashed}.lg.db9{border-color:#8b95a3}
+.sdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#5a6472}.sdot.ok{background:var(--acc)}
+#wiring{width:100%;height:auto;display:block;margin:6px 0 4px}
+.wwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.swipe{display:none;text-align:center;font-size:12px;color:var(--mut)}
+@media(max-width:760px){#wiring{min-width:820px}.swipe{display:block}}
+@media(max-width:600px){header{flex-wrap:wrap;row-gap:8px}.stage{order:5;flex-basis:100%;max-width:100%;margin-left:0;text-align:center}}
+.cables{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 14px;font-size:13px;margin-top:6px}
+.cables div{display:flex;align-items:baseline;gap:8px;padding:5px 8px;border-radius:6px;cursor:default;flex-wrap:wrap}
+.cables div.hl{background:var(--card2)}
+.cables i{font-style:normal;color:var(--mut)}
+.cables span{color:var(--mut);font-size:12px;width:100%;padding-left:30px;margin-top:-2px}
+.cn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid;font-size:11px;flex:none}
+.cn.data{border-color:var(--blue)}.cn.power{border-color:var(--warn)}.cn.db9{border-color:#8b95a3}
+.pbar{height:6px;background:var(--card2);border-radius:3px;margin:12px 0 4px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--acc);transition:width .4s}
+.steps{list-style:none;padding:0;margin:8px 0 0;counter-reset:st}
+.steps li{display:grid;grid-template-columns:34px 1fr auto;gap:4px 14px;padding:14px 10px;border-bottom:1px solid var(--line);border-radius:8px;transition:background .15s}
+.steps li:last-child{border-bottom:0}
+.steps li:hover{background:var(--card2)}
+.steps li.now{background:rgba(88,166,255,.07);outline:1px solid rgba(88,166,255,.35)}
+.steps .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--card2);color:var(--mut);grid-row:span 2}
+.steps li.done .num{background:rgba(63,185,80,.18);color:var(--acc)}
+.steps li.now .num{background:var(--blue);color:#0b1220}
+.steps .tt{font-weight:600}
+.steps .tx{color:var(--mut);font-size:14px;grid-column:2}
+.steps .st{grid-row:span 2;align-self:center;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--card2);color:var(--mut);white-space:nowrap}
+.steps li.done .st{color:var(--acc)}.steps li.now .st{color:var(--blue)}
+.steps .cr{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}
+.steps .cr .cn{width:18px;height:18px;font-size:10px;border-width:1.5px}
+details.fold summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+details.fold summary::after{content:"＋";color:var(--mut)}
+details.fold[open] summary::after{content:"－"}
+details.fold[open] summary{margin-bottom:8px}
+.guide a{color:var(--blue)}
+/* Update */
+.upd{padding:4px 12px;border-radius:999px;background:rgba(63,185,80,.15);border:1px solid var(--acc2);color:var(--acc);font-size:13px;text-decoration:none;white-space:nowrap}
+.upd:hover{background:rgba(63,185,80,.25)}
+.nbadge{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-left:6px;vertical-align:middle}
+.vers{display:flex;align-items:center;gap:18px;margin:4px 0 14px}
+.vers div{display:flex;flex-direction:column;gap:2px}
+.vers span{font-size:12px;color:var(--mut)}
+.vers b{font:700 22px var(--mono)}
+.vers .arrow{font-size:22px;color:var(--mut)}
+.ustate{padding:10px 12px;border-radius:8px;background:var(--card2);margin-bottom:14px;font-size:14px}
+.ustate.new{background:rgba(63,185,80,.12);color:var(--acc)}
+.ustate.err{background:rgba(248,81,73,.1);color:#ffa198}
+.ulog{font:12px/1.5 var(--mono);background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:10px;max-height:50vh;overflow:auto;white-space:pre-wrap;margin:0}
+.md h3,.md h4{color:var(--fg);font-size:14px;margin:14px 0 6px}
+.md ul{padding-left:20px;margin:6px 0}.md li{margin:4px 0}
+.md p{margin:6px 0}.md b{color:var(--fg)}
+.md pre{font-family:var(--mono);background:var(--card2);padding:8px 10px;border-radius:6px;overflow-x:auto;font-size:12px;color:var(--fg)}
+.md .note{margin:8px 0}
+.md a{color:var(--blue)}
 /* Log */
 #log{font:12px/1.5 var(--mono);background:#0a0d12;border:1px solid var(--line);border-radius:8px;padding:10px;height:65vh;overflow:auto;white-space:pre-wrap;word-break:break-word}
 #log .WARNING{color:var(--warn)}#log .ERROR,#log .CRITICAL{color:var(--err)}#log .DEBUG{color:var(--mut)}
@@ -112,6 +169,7 @@ pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border
 <body>
 <header>
   <div class="brand"><img src="/icon-small.svg" alt="" width="28" height="28">WheelBridge <small>Lenkrad → Xbox</small></div>
+  <a id="upd-badge" class="upd" href="#update" hidden></a>
   <div id="stage" class="stage">verbinde …</div>
   <div id="conn" class="dot" title="Verbindung zum Pi"></div>
 </header>
@@ -121,6 +179,7 @@ pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border
   <button data-tab="mapping">Mapping</button>
   <button data-tab="einstellungen">Einstellungen</button>
   <button data-tab="anleitung">Anleitung</button>
+  <button data-tab="update">Update<span class="nbadge" id="upd-dot" hidden></span></button>
   <button data-tab="log">Log</button>
 </nav>
 <main>
@@ -230,126 +289,214 @@ pre.cmd{font-family:var(--mono);background:var(--card2);padding:10px 12px;border
 <!-- ANLEITUNG -->
 <section id="tab-anleitung" class="guide">
   <div class="card">
-    <h2>Verkabelung</h2>
-    <svg viewBox="0 0 860 470" role="img" aria-label="Verkabelungsplan">
+    <div class="row" style="justify-content:space-between;margin-bottom:4px">
+      <h2 style="margin:0">Verkabelung</h2>
+      <div class="legend">
+        <span><i class="lg data"></i>Daten (USB)</span>
+        <span><i class="lg power"></i>Strom</span>
+        <span><i class="lg db9"></i>Lenkrad-Kabel (DB9)</span>
+        <span><i class="sdot ok"></i>erkannt</span>
+      </div>
+    </div>
+    <div class="wwrap"><svg id="wiring" viewBox="0 0 1000 480" role="img" aria-label="Verkabelungsplan">
       <defs>
-        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8b95a3"/></marker>
+        <marker id="arD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#58a6ff"/></marker>
+        <marker id="arP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#d29922"/></marker>
+        <marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b95a3"/></marker>
+        <linearGradient id="pcb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d6b41"/><stop offset="1" stop-color="#134a2d"/></linearGradient>
       </defs>
       <style>
-        .bx{fill:#1c222b;stroke:#3a4350;stroke-width:1.5}
-        .bx.pi{stroke:#3fb950}.bx.x{stroke:#58a6ff}.bx.pw{stroke:#d29922}
-        .t{fill:#e6e9ee;font:600 15px system-ui,sans-serif}
-        .s{fill:#8b95a3;font:12px system-ui,sans-serif}
-        .ln{stroke:#8b95a3;stroke-width:2;fill:none}
-        .ln.d{stroke:#58a6ff}.ln.p{stroke:#d29922;stroke-dasharray:6 4}
-        .lb{fill:#c9d1d9;font:12px system-ui,sans-serif}
-        .warn{fill:#f85149;font:600 12px system-ui,sans-serif}
+        #wiring .bx{fill:#1c222b;stroke:#3a4350;stroke-width:1.5}
+        #wiring .bx.x{stroke:#58a6ff}#wiring .bx.pw{stroke:#d29922}#wiring .bx.sp{stroke:#8b95a3}
+        #wiring .t{fill:#e6e9ee;font:600 15px system-ui,sans-serif}
+        #wiring .s{fill:#8b95a3;font:12px system-ui,sans-serif}
+        #wiring .w{fill:#ff7b72;font:600 12px system-ui,sans-serif}
+        #wiring .pl{fill:#c9d1d9;font:600 10px system-ui,sans-serif}
+        #wiring .port{fill:#8b95a3;font:11px system-ui,sans-serif}
+        #wiring .cable path{fill:none;stroke-width:3;stroke-linejoin:round;transition:stroke-width .15s}
+        #wiring .cable.data path{stroke:#58a6ff}
+        #wiring .cable.power path{stroke:#d29922;stroke-dasharray:7 5}
+        #wiring .cable.db9 path{stroke:#8b95a3}
+        #wiring .cable circle{fill:#0e1116;stroke-width:2}
+        #wiring .cable.data circle{stroke:#58a6ff}#wiring .cable.power circle{stroke:#d29922}#wiring .cable.db9 circle{stroke:#8b95a3}
+        #wiring .cable text{fill:#e6e9ee;font:700 12px system-ui,sans-serif;text-anchor:middle;dominant-baseline:central}
+        #wiring .cable{transition:opacity .15s;cursor:pointer}
+        #wiring.focus .cable{opacity:.15}
+        #wiring.focus .cable.hl{opacity:1}
+        #wiring .cable.hl path{stroke-width:5}
+        #wiring .cable.hl.data path{stroke-dasharray:10 6;animation:flow .6s linear infinite}
+        @keyframes flow{to{stroke-dashoffset:-16}}
+        #wiring .sd{stroke:#0e1116;stroke-width:2}
+        #wiring .sd.ok{fill:#3fb950}#wiring .sd.bad{fill:#f85149}#wiring .sd.warn{fill:#d29922}#wiring .sd.unk{fill:#5a6472}
       </style>
-      <!-- Xbox -->
-      <rect class="bx x" x="20" y="40" width="170" height="78" rx="10"/>
-      <text class="t" x="36" y="72">Xbox One X</text>
-      <text class="s" x="36" y="94">beliebiger USB-A-Port</text>
-      <!-- Splitter -->
-      <rect class="bx" x="300" y="40" width="190" height="78" rx="10"/>
-      <text class="t" x="316" y="72">USB-C-Splitter</text>
-      <text class="s" x="316" y="94">Daten ⟷ | Strom ⟶ getrennt</text>
-      <!-- Netzteil -->
-      <rect class="bx pw" x="300" y="180" width="190" height="62" rx="10"/>
-      <text class="t" x="316" y="208">Pi-Netzteil</text>
-      <text class="s" x="316" y="228">5,1 V / 3 A (offizielles)</text>
-      <!-- Pi -->
-      <rect class="bx pi" x="600" y="30" width="240" height="250" rx="12"/>
-      <text class="t" x="618" y="62">Raspberry Pi 4</text>
-      <text class="s" x="618" y="84">USB-C = Gadget zur Xbox</text>
-      <text class="s" x="618" y="102">USB-A = Host für Controller + Lenkrad</text>
-      <rect x="618" y="226" width="44" height="34" rx="4" fill="#2a313c"/><rect x="672" y="226" width="44" height="34" rx="4" fill="#2a313c"/>
-      <rect x="726" y="226" width="44" height="34" rx="4" fill="#2a313c"/><rect x="780" y="226" width="44" height="34" rx="4" fill="#2a313c"/>
-      <text class="s" x="618" y="218">USB-A-Ports</text>
-      <rect x="586" y="62" width="14" height="28" rx="3" fill="#3fb950"/>
-      <!-- Controller -->
-      <rect class="bx x" x="600" y="340" width="240" height="100" rx="10"/>
-      <text class="t" x="618" y="372">Xbox-Controller (Original)</text>
-      <text class="s" x="618" y="394">nur für den Handshake</text>
-      <text class="warn" x="618" y="418">⚠ ohne Akkus / Batterien!</text>
-      <!-- G27 -->
-      <rect class="bx" x="300" y="330" width="190" height="110" rx="10"/>
-      <text class="t" x="316" y="362">Logitech G27</text>
-      <text class="s" x="316" y="384">Basis mit eigenem Netzteil</text>
-      <text class="s" x="316" y="404">Pedale + Shifter in die Basis</text>
-      <rect class="bx" x="20" y="330" width="170" height="50" rx="10"/>
-      <text class="t" x="36" y="361">Pedale</text>
-      <rect class="bx" x="20" y="392" width="170" height="50" rx="10"/>
-      <text class="t" x="36" y="423">H-Shifter</text>
-      <rect class="bx pw" x="300" y="258" width="190" height="44" rx="10"/>
-      <text class="t" x="316" y="285">G27-Netzteil</text>
-      <!-- Leitungen -->
-      <path class="ln d" d="M190 79 H300" marker-end="url(#ar)"/>
-      <text class="lb" x="196" y="70">USB-A → USB-C</text>
-      <text class="lb" x="214" y="100">(Datenkabel)</text>
-      <path class="ln p" d="M395 180 V118" marker-end="url(#ar)"/>
-      <text class="lb" x="404" y="160">Strom</text>
-      <path class="ln d" d="M490 76 H586" marker-end="url(#ar)"/>
-      <text class="lb" x="500" y="100">USB-C</text>
-      <path class="ln d" d="M640 260 V340" marker-end="url(#ar)"/>
-      <text class="lb" x="648" y="310">USB (Daten)</text>
-      <path class="ln d" d="M748 260 V300 H545 V385 H490" marker-end="url(#ar)"/>
-      <text class="lb" x="556" y="296">USB</text>
-      <path class="ln" d="M190 355 H300" marker-end="url(#ar)"/>
-      <path class="ln" d="M190 417 H300" marker-end="url(#ar)"/>
-      <text class="lb" x="220" y="348">DB9</text><text class="lb" x="220" y="410">DB9</text>
-      <path class="ln p" d="M395 302 V330" marker-end="url(#ar)"/>
-    </svg>
-    <div class="note bad"><b>Kein USB-A-auf-USB-A-Kabel!</b> Die USB-A-Buchsen des Pi können nicht als Gerät arbeiten – nur der USB-C-Port kann das. A-A-Kabel verbinden außerdem zwei Stromquellen direkt miteinander und können USB-Ports beschädigen.</div>
-    <div class="note"><b>Pi nicht über die Xbox versorgen.</b> Ein Xbox-USB-Port liefert ca. 0,9 A, der Pi 4 braucht bis 3 A → Unterspannung und Abstürze. Der Splitter nimmt die Daten von der Xbox und den Strom vom Netzteil. Die Übersicht warnt bei Unterspannung.</div>
+
+      <!-- ===== Reihenfolge-Hinweis ===== -->
+      <text class="t" x="20" y="56">Reihenfolge</text>
+      <g class="s" style="font-size:13px">
+        <text x="20" y="84"><tspan style="fill:#d29922;font-weight:700">①</tspan> Strom: Netzteil → Splitter → Pi</text>
+        <text x="20" y="108"><tspan style="fill:#58a6ff;font-weight:700">②</tspan> Lenkrad + Controller an den Pi</text>
+        <text x="20" y="132"><tspan style="fill:#58a6ff;font-weight:700">③</tspan> Mapping im Dashboard prüfen</text>
+        <text x="20" y="156"><tspan style="fill:#3fb950;font-weight:700">④</tspan> zuletzt: Xbox an den Splitter</text>
+      </g>
+      <text class="s" x="20" y="186" style="font-size:11px">Zahlen an den Kabeln: siehe Liste unten.</text>
+
+      <!-- ===== Raspberry Pi 4 (Draufsicht) ===== -->
+      <text class="t" x="330" y="56">Raspberry Pi 4</text>
+      <circle id="dot-pi" class="sd ok" cx="600" cy="51" r="6"/>
+      <rect x="330" y="70" width="280" height="190" rx="10" fill="url(#pcb)" stroke="#2ea043" stroke-width="1.5"/>
+      <g fill="#0e1116"><circle cx="348" cy="88" r="6"/><circle cx="348" cy="242" r="6"/><circle cx="526" cy="88" r="6"/><circle cx="526" cy="242" r="6"/></g>
+      <rect x="362" y="74" width="158" height="18" rx="2" fill="#111"/>
+      <g fill="#d4a017">
+        <rect x="366" y="77" width="4" height="4"/><rect x="374" y="77" width="4" height="4"/><rect x="382" y="77" width="4" height="4"/><rect x="390" y="77" width="4" height="4"/><rect x="398" y="77" width="4" height="4"/><rect x="406" y="77" width="4" height="4"/><rect x="414" y="77" width="4" height="4"/><rect x="422" y="77" width="4" height="4"/><rect x="430" y="77" width="4" height="4"/><rect x="438" y="77" width="4" height="4"/><rect x="446" y="77" width="4" height="4"/><rect x="454" y="77" width="4" height="4"/><rect x="462" y="77" width="4" height="4"/><rect x="470" y="77" width="4" height="4"/><rect x="478" y="77" width="4" height="4"/><rect x="486" y="77" width="4" height="4"/><rect x="494" y="77" width="4" height="4"/><rect x="502" y="77" width="4" height="4"/><rect x="510" y="77" width="4" height="4"/>
+        <rect x="366" y="85" width="4" height="4"/><rect x="374" y="85" width="4" height="4"/><rect x="382" y="85" width="4" height="4"/><rect x="390" y="85" width="4" height="4"/><rect x="398" y="85" width="4" height="4"/><rect x="406" y="85" width="4" height="4"/><rect x="414" y="85" width="4" height="4"/><rect x="422" y="85" width="4" height="4"/><rect x="430" y="85" width="4" height="4"/><rect x="438" y="85" width="4" height="4"/><rect x="446" y="85" width="4" height="4"/><rect x="454" y="85" width="4" height="4"/><rect x="462" y="85" width="4" height="4"/><rect x="470" y="85" width="4" height="4"/><rect x="478" y="85" width="4" height="4"/><rect x="486" y="85" width="4" height="4"/><rect x="494" y="85" width="4" height="4"/><rect x="502" y="85" width="4" height="4"/><rect x="510" y="85" width="4" height="4"/>
+      </g>
+      <rect x="405" y="132" width="60" height="60" rx="4" fill="#b8bec6"/><text x="435" y="166" text-anchor="middle" style="font:700 9px system-ui;fill:#30363d">BCM2711</text>
+      <rect x="482" y="138" width="40" height="48" rx="2" fill="#24292f"/>
+      <!-- Ports rechts: LAN, USB 3 (blau), USB 2 (schwarz) -->
+      <rect x="584" y="80" width="64" height="50" rx="3" fill="#c0c4ca" stroke="#8b95a3"/><text class="pl" x="616" y="109" text-anchor="middle" style="fill:#30363d">LAN</text>
+      <rect x="590" y="138" width="58" height="54" rx="3" fill="#c0c4ca" stroke="#8b95a3"/>
+      <rect x="600" y="148" width="40" height="13" rx="2" fill="#1f6feb"/><rect x="600" y="169" width="40" height="13" rx="2" fill="#1f6feb"/>
+      <rect x="590" y="198" width="58" height="56" rx="3" fill="#c0c4ca" stroke="#3fb950" stroke-width="2"/>
+      <rect x="600" y="208" width="40" height="13" rx="2" fill="#24292f"/><rect x="600" y="230" width="40" height="13" rx="2" fill="#24292f"/>
+      <text class="port" x="574" y="168" text-anchor="end">USB 3</text>
+      <text class="port" x="574" y="230" text-anchor="end" style="fill:#3fb950">USB 2 ✓</text>
+      <!-- Ports unten: USB-C, 2× micro-HDMI, Audio -->
+      <rect x="352" y="252" width="30" height="15" rx="5" fill="#c0c4ca" stroke="#3fb950" stroke-width="2"/>
+      <rect x="400" y="254" width="20" height="11" rx="2" fill="#c0c4ca"/><rect x="434" y="254" width="20" height="11" rx="2" fill="#c0c4ca"/>
+      <circle cx="492" cy="259" r="7" fill="#24292f" stroke="#8b95a3"/>
+      <text class="port" x="390" y="284" style="fill:#3fb950">USB-C → zur Xbox</text>
+
+      <!-- ===== linke Seite: Xbox, Netzteil, Splitter ===== -->
+      <rect class="bx x" x="20" y="310" width="170" height="70" rx="10"/>
+      <text class="t" x="36" y="340">Xbox One X</text><text class="s" x="36" y="360">beliebiger USB-A-Port</text>
+      <circle id="dot-xbox" class="sd unk" cx="178" cy="322" r="6"/>
+      <rect class="bx pw" x="20" y="410" width="170" height="60" rx="10"/>
+      <text class="t" x="36" y="436">Pi-Netzteil</text><text class="s" x="36" y="455">5,1 V / 3 A</text>
+      <circle id="dot-power" class="sd unk" cx="178" cy="422" r="6"/>
+      <rect class="bx sp" x="240" y="320" width="150" height="150" rx="10"/>
+      <text class="t" x="315" y="390" text-anchor="middle">USB-C-Splitter</text>
+      <text class="s" x="315" y="408" text-anchor="middle">trennt Daten &amp; Strom</text>
+      <text class="port" x="250" y="341">Daten</text><text class="port" x="250" y="436">Strom</text>
+
+      <!-- ===== rechte Seite: Controller, G27, Pedale, Shifter ===== -->
+      <rect class="bx x" x="730" y="40" width="250" height="110" rx="10"/>
+      <text class="t" x="748" y="72">Xbox-Controller</text><text class="s" x="748" y="94">Original, per Datenkabel</text>
+      <text class="w" x="748" y="124">⚠ ohne Akkus / Batterien!</text>
+      <circle id="dot-ctrl" class="sd unk" cx="966" cy="54" r="6"/>
+      <rect class="bx" x="730" y="190" width="250" height="110" rx="10"/>
+      <text class="t" x="748" y="222">Logitech G27</text><text class="s" x="748" y="244">Lenkrad-Basis</text>
+      <text class="s" x="748" y="264">Pedale + Shifter stecken hier</text>
+      <circle id="dot-wheel" class="sd unk" cx="966" cy="204" r="6"/>
+      <rect class="bx" x="730" y="350" width="115" height="50" rx="10"/><text class="t" x="787" y="380" text-anchor="middle">Pedale</text>
+      <rect class="bx" x="865" y="350" width="115" height="50" rx="10"/><text class="t" x="922" y="380" text-anchor="middle">H-Shifter</text>
+      <rect class="bx pw" x="545" y="312" width="145" height="46" rx="10"/><text class="t" x="560" y="340">G27-Netzteil</text>
+
+      <!-- ===== Kabel ===== -->
+      <g class="cable data" data-c="1"><path d="M190 345 H236" marker-end="url(#arD)"/><circle cx="214" cy="345" r="12"/><text x="214" y="345">1</text></g>
+      <g class="cable power" data-c="2"><path d="M190 440 H236" marker-end="url(#arP)"/><circle cx="214" cy="440" r="12"/><text x="214" y="440">2</text></g>
+      <g class="cable data" data-c="3"><path d="M315 320 V300 H367 V271" marker-end="url(#arD)"/><circle cx="340" cy="300" r="12"/><text x="340" y="300">3</text></g>
+      <g class="cable data" data-c="4"><path d="M648 214 H685 V95 H726" marker-end="url(#arD)"/><circle cx="685" cy="152" r="12"/><text x="685" y="152">4</text></g>
+      <g class="cable data" data-c="5"><path d="M648 236 H726" marker-end="url(#arD)"/><circle cx="690" cy="236" r="12"/><text x="690" y="236">5</text></g>
+      <g class="cable db9" data-c="6"><path d="M787 350 V304" marker-end="url(#arG)"/><circle cx="787" cy="326" r="12"/><text x="787" y="326">6</text></g>
+      <g class="cable db9" data-c="7"><path d="M922 350 V304" marker-end="url(#arG)"/><circle cx="922" cy="326" r="12"/><text x="922" y="326">7</text></g>
+      <g class="cable power" data-c="8"><path d="M690 335 H708 V280 H726" marker-end="url(#arP)"/><circle cx="708" cy="308" r="12"/><text x="708" y="308">8</text></g>
+    </svg></div>
+    <div class="swipe">← Diagramm wischen →</div>
+    <div class="cables" id="cable-list">
+      <div data-c="1"><b class="cn data">1</b> Xbox (USB-A) → Splitter <i>Daten</i> <span>USB-A-auf-USB-C-<u>Daten</u>kabel</span></div>
+      <div data-c="2"><b class="cn power">2</b> Pi-Netzteil → Splitter <i>Strom</i> <span>offizielles 5,1 V / 3 A</span></div>
+      <div data-c="3"><b class="cn data">3</b> Splitter → USB-C am Pi <span>trägt Daten + Strom</span></div>
+      <div data-c="4"><b class="cn data">4</b> Pi USB 2 → Controller <span>Micro-USB / USB-C, Datenkabel</span></div>
+      <div data-c="5"><b class="cn data">5</b> Pi USB 2 → G27 <span>USB-Kabel der Basis</span></div>
+      <div data-c="6"><b class="cn db9">6</b> Pedale → G27 <span>DB9</span></div>
+      <div data-c="7"><b class="cn db9">7</b> Shifter → G27 <span>DB9</span></div>
+      <div data-c="8"><b class="cn power">8</b> Netzteil → G27 <span>ohne Strom kein Lenkrad</span></div>
+    </div>
+    <div class="grid" style="margin-top:14px;gap:12px">
+      <div class="note bad" style="margin:0"><b>Kein USB-A-auf-USB-A-Kabel.</b> Nur der USB-C-Port des Pi kann sich als Gerät ausgeben. A-A-Kabel verbinden zwei Stromquellen und können Ports beschädigen.</div>
+      <div class="note" style="margin:0"><b>Pi nicht aus der Xbox versorgen.</b> Ein Xbox-Port liefert ca. 0,9 A, der Pi braucht bis 3 A. Ohne Splitter drohen Unterspannung und Aussetzer.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Anschließen – Schritt für Schritt</h2>
+      <span class="mut" id="g-progress"></span>
+    </div>
+    <div class="pbar"><i id="g-pbar"></i></div>
+    <ol class="steps" id="g-steps"></ol>
   </div>
 
   <div class="grid" style="margin-top:16px">
-    <div class="card">
-      <h2>Einkaufsliste</h2>
+    <details class="card fold">
+      <summary>Einkaufsliste</summary>
       <ul>
         <li>Raspberry Pi 4 (2 GB reichen) + microSD ≥ 8 GB</li>
         <li>Offizielles Pi-4-Netzteil 5,1 V / 3 A</li>
-        <li><b>USB-C-Daten/Strom-Splitter</b> für Pi-Gadget-Betrieb (Datenzweig ohne VBUS-Durchleitung)</li>
-        <li>USB-A-auf-USB-C-<b>Datenkabel</b> (Xbox → Splitter)</li>
-        <li>Original-Xbox-Controller (One oder Series) + Datenkabel (Micro-USB bzw. USB-C)</li>
-        <li>G27 mit Netzteil, Pedalen und Shifter (vorhanden)</li>
+        <li><b>USB-C-Daten/Strom-Splitter</b> für den Pi-Gadget-Betrieb (Datenzweig ohne VBUS)</li>
+        <li>USB-A-auf-USB-C-<b>Datenkabel</b> (viele billige Kabel sind reine Ladekabel)</li>
+        <li>Original-Xbox-Controller (One oder Series) + Datenkabel</li>
+        <li>Lenkrad mit Netzteil, Pedalen und Shifter</li>
       </ul>
-      <p class="mut" style="font-size:13px">Alternative ohne Splitter: Pi über die GPIO-Pins 2/4 (5 V) und 6 (GND) versorgen und ein Datenkabel mit getrennter VBUS-Ader nutzen. Das umgeht die Sicherung des Pi – nur wenn du weißt, was du tust.</p>
-    </div>
-    <div class="card">
-      <h2>Inbetriebnahme</h2>
-      <ol>
-        <li>Raspberry Pi OS Lite (64 Bit, Bookworm) flashen, SSH + WLAN/LAN einrichten.</li>
-        <li>Auf dem Pi installieren:
-          <pre class="cmd">curl -fsSL https://raw.githubusercontent.com/W0rkingChr1s/WheelBridge/main/install.sh | sudo bash
+      <p class="mut" style="font-size:13px">Ohne Splitter: Pi über GPIO-Pin 2/4 (5 V) und 6 (GND) versorgen und ein Datenkabel mit getrennter VBUS-Ader nutzen. Das umgeht die Sicherung des Pi – nur wenn du weißt, was du tust.</p>
+    </details>
+    <details class="card fold">
+      <summary>Software installieren &amp; aktualisieren</summary>
+      <p>Auf dem Pi (Raspberry Pi OS Lite, 64 Bit):</p>
+      <pre class="cmd">curl -fsSL https://raw.githubusercontent.com/W0rkingChr1s/WheelBridge/main/install.sh | sudo bash
 sudo reboot</pre>
-          Danach dieses Dashboard unter <code>http://wheelbridge.local:8080</code> öffnen (Adresse: <code>wheelbridge url</code>).</li>
-        <li><b>Noch nicht an die Xbox.</b> Erst Lenkrad + Controller (ohne Akkus) an den Pi, bis die Checkliste bis „Xbox-Schnittstelle bereit“ grün ist.</li>
-        <li>Im Tab <b>Mapping</b> Achsen und Knöpfe zuweisen, im Tab <b>Live</b> kontrollieren.</li>
-        <li>Splitter: Netzteil an den Stromeingang, Xbox-Kabel an den Dateneingang, Ausgang in den USB-C-Port des Pi.</li>
-        <li>Xbox einschalten. Die Checkliste sollte „Mit Xbox verbunden“ → „Handshake“ → „Lenkrad-Eingaben aktiv“ durchlaufen.</li>
-        <li>Probleme? <code>wheelbridge doctor</code> prüft alles im Terminal, <code>wheelbridge sniff</code> zeichnet den Xbox-Verkehr für Bug-Reports auf. Ausführlich: <a href="https://github.com/W0rkingChr1s/WheelBridge/blob/main/docs/INSTALL.md" target="_blank" rel="noopener" style="color:var(--blue)">docs/INSTALL.md</a></li>
-      </ol>
-    </div>
-    <div class="card">
-      <h2>Im Spiel (z. B. Forza)</h2>
+      <p>Updates bietet das Dashboard im Tab <b>Update</b> an, oder per Terminal: <code>wheelbridge update</code>. Systemcheck: <code>wheelbridge doctor</code>.</p>
+      <p><a href="https://github.com/W0rkingChr1s/WheelBridge/blob/main/docs/INSTALL.md" target="_blank" rel="noopener">Ausführliche Anleitung auf GitHub ↗</a></p>
+    </details>
+    <details class="card fold">
+      <summary>Im Spiel (z. B. Forza)</summary>
       <ul>
-        <li>Erweiterte Steuerung: <b>Lenkung innere Deadzone = 0</b>, äußere = 100.</li>
-        <li>Kupplung auf den in den Einstellungen gewählten Knopf (Standard LB) legen.</li>
-        <li>Lenkwinkel 270–360° ist ein guter Start. 900° fühlt sich mit Gamepad-Lenkung träge an.</li>
-        <li>Es gibt kein echtes Force Feedback: Zentrierfeder lokal, Vibration aus dem Rumble des Spiels.</li>
+        <li>Erweiterte Steuerung: <b>innere Lenk-Deadzone = 0</b>, äußere = 100</li>
+        <li>Kupplung auf den Knopf legen, den du unter <i>Einstellungen → Kupplung als Knopf</i> gewählt hast (Standard LB)</li>
+        <li>Lenkwinkel 270–360° ist ein guter Start; 900° wirkt mit Gamepad-Lenkung träge</li>
+        <li>Kein echtes Force Feedback: Zentrierfeder lokal, Vibration aus dem Rumble des Spiels</li>
       </ul>
-    </div>
-    <div class="card">
-      <h2>Fehlersuche</h2>
+    </details>
+    <details class="card fold">
+      <summary>Fehlersuche</summary>
       <table>
-        <tr><td>Kein „Mit Xbox verbunden“</td><td class="mut">Kabel/Splitter-Richtung prüfen; Datenkabel statt Ladekabel; <code>ls /sys/class/udc</code></td></tr>
-        <tr><td>Verbunden, kein Handshake</td><td class="mut">„Controller neu anmelden“ klicken; xpad gesperrt? Log prüfen</td></tr>
-        <tr><td>Bricht nach Handshake ab</td><td class="mut"><code>/tmp/gip.log</code> sichern und auswerten</td></tr>
-        <tr><td>Controller verbindet direkt</td><td class="mut">Akkus raus – sonst Funk statt Kabel</td></tr>
+        <tr><td>Kein „Mit Xbox verbunden“</td><td class="mut">Kabel 1 ist ein Ladekabel? Splitter-Eingänge vertauscht?</td></tr>
+        <tr><td>Verbunden, kein Handshake</td><td class="mut">Im Log <code>Errno 110</code>? Controller-Kabel 4 kurz abziehen. Sonst „Controller neu anmelden“</td></tr>
+        <tr><td>Controller verbindet sich direkt</td><td class="mut">Akkus raus – sonst Funk statt Kabel</td></tr>
+        <tr><td>Aussetzer, Neustarts</td><td class="mut">Unterspannung: Netzteil an den Strom-Eingang des Splitters</td></tr>
         <tr><td>Lenkung zappelt in der Mitte</td><td class="mut">Gamma erhöhen; Deadzone im Spiel prüfen</td></tr>
       </table>
+    </details>
+  </div>
+</section>
+
+<!-- UPDATE -->
+<section id="tab-update">
+  <div class="grid">
+    <div class="card">
+      <h2>Software</h2>
+      <div class="vers">
+        <div><span>Installiert</span><b id="u-cur">–</b></div>
+        <div class="arrow">→</div>
+        <div><span>Neueste auf GitHub</span><b id="u-new">–</b></div>
+      </div>
+      <div id="u-state" class="ustate">Noch nicht geprüft.</div>
+      <div class="row">
+        <button class="btn" id="u-check">Jetzt prüfen</button>
+        <button class="btn pri" id="u-apply" hidden>Aktualisieren</button>
+      </div>
+      <p class="mut" style="font-size:12px;margin:12px 0 0" id="u-checked"></p>
+      <p class="mut" style="font-size:12px;margin:6px 0 0">Beim Update startet der Dienst neu – die Verbindung zur Xbox ist dabei kurz unterbrochen. Deine Einstellungen und das Mapping bleiben erhalten.</p>
     </div>
+    <div class="card">
+      <h2>Was ist neu <small id="u-tag"></small></h2>
+      <div id="u-notes" class="md mut">–</div>
+      <p style="margin:12px 0 0"><a id="u-link" href="https://github.com/W0rkingChr1s/WheelBridge/releases" target="_blank" rel="noopener" style="color:var(--blue)">Alle Releases auf GitHub ↗</a></p>
+    </div>
+  </div>
+  <div class="card" id="u-logcard" style="margin-top:16px" hidden>
+    <h2>Update-Protokoll <small id="u-logstate"></small></h2>
+    <pre id="u-log" class="ulog"></pre>
   </div>
 </section>
 
@@ -398,7 +545,7 @@ function showTab(id){
   $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === id));
   history.replaceState(null, "", "#" + id);
 }
-$("#nav").addEventListener("click", e => { if (e.target.dataset.tab) showTab(e.target.dataset.tab); });
+$("#nav").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) showTab(b.dataset.tab); });
 window.addEventListener("hashchange", () => showTab(location.hash.slice(1)));
 
 /* ---------- Checkliste ---------- */
@@ -625,6 +772,150 @@ $("#s-reset").addEventListener("click", async () => {
 $("#a-rumble").addEventListener("click", () => api("/api/action/rumble", {}).then(() => toast("Vibration 1 s")).catch(e => toast(e.message, true)));
 $("#a-reconnect").addEventListener("click", () => api("/api/action/reconnect", {}).then(() => toast("Controller wird neu angemeldet")).catch(e => toast(e.message, true)));
 
+/* ---------- Anleitung: Live-Assistent + Kabel-Hervorhebung ---------- */
+const STEPS = [
+  {t:"Stromversorgung", c:[2,3], ok:s => s.checks.undervoltage_now == null ? null : !s.checks.undervoltage_now,
+   x:"Pi-Netzteil in den <b>Strom</b>-Eingang des Splitters, den Splitter-Ausgang in den <b>USB-C</b>-Port des Pi.",
+   bad:"Unterspannung – hängt der Pi noch an der Xbox statt am Netzteil?"},
+  {t:"Lenkrad anschließen", c:[5,6,7,8], ok:s => s.wheel.connected,
+   x:"Pedale und Shifter per DB9 an die G27-Basis, Netzteil an die Basis, USB in einen <b>schwarzen USB-2-Port</b> des Pi."},
+  {t:"Xbox-Controller anschließen", c:[4], ok:s => s.controller.connected,
+   x:"<b>Akkus raus</b>, dann per Datenkabel in den zweiten USB-2-Port. Er dient nur der Anmeldung an der Xbox."},
+  {t:"Mit der Xbox verbinden", c:[1], ok:s => s.xbox.enabled,
+   x:"Erst jetzt: USB-A-Port der Xbox → USB-A-auf-USB-C-Datenkabel → <b>Daten</b>-Eingang des Splitters. Xbox einschalten."},
+  {t:"Anmeldung & losfahren", c:[], ok:s => s.xbox.armed,
+   x:"Der Pi meldet den Controller bei der Xbox an (dauert ein paar Sekunden). Danach steuert das Lenkrad – prüfen im Tab <b>Live</b>."},
+];
+let guideSig = "";
+function renderGuide(s){
+  const dot = (id, state) => { const el = $("#" + id); if (el) el.setAttribute("class", "sd " + state); };
+  const st = v => v === true ? "ok" : v === false ? "bad" : "unk";
+  dot("dot-xbox", s.xbox.enabled ? "ok" : "unk");
+  dot("dot-ctrl", st(s.controller.connected));
+  dot("dot-wheel", st(s.wheel.connected));
+  dot("dot-power", s.checks.undervoltage_now ? "bad" : s.checks.undervoltage_boot ? "warn" : s.checks.undervoltage_now === false ? "ok" : "unk");
+  const res = STEPS.map(x => x.ok(s));
+  const now = res.findIndex(v => v === false);
+  const sig = JSON.stringify([res, now]);
+  if (sig === guideSig) return;
+  guideSig = sig;
+  const done = res.filter(v => v !== false).length;
+  $("#g-progress").textContent = done === STEPS.length ? "Alles verbunden ✓" : `${done} von ${STEPS.length} erledigt`;
+  $("#g-pbar").style.width = (done / STEPS.length * 100) + "%";
+  $("#g-steps").innerHTML = STEPS.map((x, i) => {
+    const ok = res[i] === true, unk = res[i] === null, cur = i === now;
+    const cls = ok || unk ? "done" : cur ? "now" : "";
+    const badge = ok ? "erledigt" : unk ? "nicht prüfbar" : cur ? (x.bad && i === 0 ? "Achtung" : "jetzt dran") : "offen";
+    const text = !ok && res[i] === false && x.bad ? x.bad + "<br>" + x.x : x.x;
+    const chips = x.c.map(n => `<b class="cn ${n === 2 || n === 8 ? "power" : n >= 6 ? "db9" : "data"}">${n}</b>`).join("");
+    return `<li class="${cls}" data-c="${x.c.join(",")}"><span class="num">${ok ? "✓" : unk ? "?" : i + 1}</span>
+      <span class="tt">${x.t}${chips ? `<span class="cr">${chips}</span>` : ""}</span><span class="st">${badge}</span>
+      <span class="tx">${text}</span></li>`;
+  }).join("");
+}
+function highlight(list){
+  const svg = $("#wiring"), set = new Set(list.filter(Boolean).map(String));
+  svg.classList.toggle("focus", set.size > 0);
+  $$("#wiring .cable").forEach(g => g.classList.toggle("hl", set.has(g.dataset.c)));
+  $$("#cable-list > div").forEach(d => d.classList.toggle("hl", set.has(d.dataset.c)));
+}
+for (const sel of ["#g-steps", "#cable-list", "#wiring"]) {
+  $(sel).addEventListener("mouseover", e => { const t = e.target.closest("[data-c]"); if (t) highlight(t.dataset.c.split(",")); });
+  $(sel).addEventListener("mouseleave", () => highlight([]));
+}
+
+/* ---------- Update ---------- */
+let upd = null, updPoll = null, updFrom = null, updT0 = 0;
+function md(src){
+  const inline = t => esc(t)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const out = []; let list = false, code = null, quote = null;
+  const close = () => { if (list) { out.push("</ul>"); list = false; } if (quote) { out.push(`<div class="note${quote.cls}">${quote.lines.join(" ")}</div>`); quote = null; } };
+  for (const raw of (src || "").replace(/\r/g, "").split("\n")) {
+    if (code !== null) { if (raw.startsWith("```")) { out.push(`<pre>${esc(code.join("\n"))}</pre>`); code = null; } else code.push(raw); continue; }
+    if (raw.startsWith("```")) { close(); code = []; continue; }
+    const l = raw.trim();
+    if (l.startsWith(">")) {
+      const t = l.replace(/^>\s?/, "");
+      if (!quote) { if (list) { out.push("</ul>"); list = false; } quote = {cls: "", lines: []}; }
+      const m = t.match(/^\[!(WARNING|CAUTION|NOTE|TIP|IMPORTANT)\]$/);
+      if (m) quote.cls = m[1] === "CAUTION" ? " bad" : ""; else quote.lines.push(inline(t));
+      continue;
+    }
+    if (quote) close();
+    if (/^[-*] /.test(l)) { if (!list) { out.push("<ul>"); list = true; } out.push(`<li>${inline(l.slice(2))}</li>`); continue; }
+    close();
+    if (/^#{1,6} /.test(l)) { out.push(`<h4>${inline(l.replace(/^#+ /, ""))}</h4>`); continue; }
+    if (l) out.push(`<p>${inline(l)}</p>`);
+  }
+  close(); if (code !== null) out.push(`<pre>${esc(code.join("\n"))}</pre>`);
+  return out.join("");
+}
+function fmtDate(iso){ try { return new Date(iso).toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"numeric"}); } catch { return iso; } }
+function renderUpdate(){
+  if (!upd) return;
+  const cur = upd.current ? "v" + upd.current.replace(/^v/, "") : "–";
+  $("#u-cur").textContent = cur;
+  $("#u-new").textContent = upd.latest || "–";
+  const box = $("#u-state");
+  if (upd.error) { box.className = "ustate err"; box.textContent = upd.error; }
+  else if (upd.running) { box.className = "ustate"; box.textContent = "Update läuft …"; }
+  else if (upd.available) { box.className = "ustate new"; box.textContent = `Neue Version verfügbar: ${upd.latest}${upd.prerelease ? " (Vorabversion)" : ""}${upd.published ? " vom " + fmtDate(upd.published) : ""}`; }
+  else if (upd.latest) { box.className = "ustate"; box.textContent = "WheelBridge ist aktuell."; }
+  else if (upd.checked) { box.className = "ustate"; box.textContent = "Auf GitHub ist noch kein Release veröffentlicht."; }
+  const btn = $("#u-apply"); btn.hidden = !upd.available || upd.running; btn.textContent = `Auf ${upd.latest} aktualisieren`;
+  $("#u-checked").textContent = upd.checked ? "Zuletzt geprüft: " + new Date(upd.checked * 1000).toLocaleString("de-DE") : "";
+  $("#u-tag").textContent = upd.latest ? "– " + upd.latest : "";
+  $("#u-notes").innerHTML = upd.notes ? md(upd.notes) : "–";
+  if (upd.url) $("#u-link").href = upd.url;
+  if (upd.running && !updPoll) startUpdatePoll();
+}
+function renderUpdateBadge(s){
+  const b = $("#upd-badge"), avail = s.update && s.update.available;
+  b.hidden = !avail; $("#upd-dot").hidden = !avail;
+  if (avail) b.textContent = `Update ${s.update.latest} verfügbar`;
+  if (upd && s.version && upd.current !== s.version) { upd.current = s.version; renderUpdate(); }
+}
+async function loadUpdate(check){
+  try { upd = check ? await api("/api/update/check", {}) : await api("/api/update"); renderUpdate(); if (check) toast(upd.available ? "Update verfügbar" : upd.error ? "Prüfung fehlgeschlagen" : "Keine neue Version"); }
+  catch (e) { toast(e.message, true); }
+}
+function startUpdatePoll(){
+  $("#u-logcard").hidden = false; updT0 = Date.now();
+  if (updFrom === null) updFrom = upd ? upd.current : null;
+  clearInterval(updPoll);
+  updPoll = setInterval(async () => {
+    try {
+      const r = await (await fetch("/api/update/log", {cache: "no-store"})).json();
+      const box = $("#u-log"), near = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
+      box.textContent = r.log || "…"; if (near) box.scrollTop = box.scrollHeight;
+      if (!r.running && updFrom && r.version !== updFrom) {
+        clearInterval(updPoll); updPoll = null;
+        $("#u-logstate").textContent = "– abgeschlossen";
+        toast(`Aktualisiert auf v${r.version} – lade neu …`);
+        setTimeout(() => location.reload(), 2500);
+      } else if (!r.running && Date.now() - updT0 > 15000 && /Fehler|✗/.test(r.log || "")) {
+        clearInterval(updPoll); updPoll = null;
+        $("#u-logstate").textContent = "– fehlgeschlagen"; toast("Update fehlgeschlagen – siehe Protokoll", true);
+      } else {
+        $("#u-logstate").textContent = r.running ? "– läuft" : "– Dienst startet neu …";
+      }
+    } catch { $("#u-logstate").textContent = "– Dienst startet neu …"; }
+    if (updPoll && Date.now() - updT0 > 300000) { clearInterval(updPoll); updPoll = null; toast("Update dauert ungewöhnlich lange – siehe Protokoll", true); }
+  }, 1500);
+}
+$("#u-check").addEventListener("click", () => loadUpdate(true));
+$("#u-apply").addEventListener("click", async () => {
+  if (!upd?.latest || !confirm(`Auf ${upd.latest} aktualisieren?\n\nDer Dienst startet dabei neu, die Verbindung zur Xbox ist kurz unterbrochen. Einstellungen bleiben erhalten.`)) return;
+  try {
+    updFrom = upd.current;
+    await api("/api/update/apply", {tag: upd.latest});
+    upd.running = true; renderUpdate(); startUpdatePoll(); toast("Update gestartet");
+  } catch (e) { toast(e.message, true); }
+});
+
 /* ---------- Log ---------- */
 function appendLog(lines){
   if (!lines?.length) return;
@@ -645,7 +936,7 @@ $("#log-clear").addEventListener("click", () => $("#log").innerHTML = "");
 function render(){
   queued = false;
   if (!st || !cfg) return;
-  renderOverview(st); renderLive(st); renderMapping(st);
+  renderOverview(st); renderLive(st); renderMapping(st); renderGuide(st); renderUpdateBadge(st);
 }
 function connect(){
   const es = new EventSource("/api/stream");
@@ -657,7 +948,7 @@ function connect(){
   };
 }
 showTab(location.hash.slice(1) || "uebersicht");
-loadCfg().then(connect).catch(e => { toast("Konfiguration nicht ladbar: " + e.message, true); connect(); });
+loadUpdate(false); loadCfg().then(connect).catch(e => { toast("Konfiguration nicht ladbar: " + e.message, true); connect(); });
 </script>
 </body>
 </html>

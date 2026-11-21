@@ -27,7 +27,7 @@
 ![Dashboard](docs/img/uebersicht.png)
 
 > [!WARNING]
-> **Experimentell.** Protokoll-Logik, Mapping, Dashboard und Installer sind getestet, der Betrieb an einer echten Xbox noch nicht (siehe [Offene Punkte](#offene-punkte)). Testberichte sind sehr willkommen: [Lenkrad-Testbericht](https://github.com/W0rkingChr1s/WheelBridge/issues/new?template=wheel_report.md).
+> **Experimentell.** Läuft an echter Hardware (Pi 4, Xbox One X, Xbox-One-S-Controller, G27), ist aber noch jung. Andere Controller und Lenkräder sind ungetestet (siehe [Offene Punkte](#offene-punkte)). Testberichte sind sehr willkommen: [Lenkrad-Testbericht](https://github.com/W0rkingChr1s/WheelBridge/issues/new?template=wheel_report.md).
 
 ## Wie es funktioniert
 
@@ -45,21 +45,22 @@ Xbox One und Series akzeptieren nur Controller mit Microsofts Sicherheitschip. D
 
 ## Features
 
-- Ein-Zeilen-Installer mit Update/Deinstallation, CLI und Systemcheck (`wheelbridge doctor`)
+- Ein-Zeilen-Installer, **Updates per Knopfdruck im Dashboard** (prüft GitHub-Releases), CLI und Systemcheck (`wheelbridge doctor`)
 - Web-Dashboard ohne externe Abhängigkeiten (`http://<pi-ip>:8080`)
   - **Live-Checkliste** für die Inbetriebnahme: Treiber, Strom, Geräte, Xbox, Handshake
   - **Live-Ansicht**: Lenkwinkel, Pedale, Knöpfe, Vibration
   - **Mapping-Assistent**: Pedal treten bzw. Knopf drücken und dann zuweisen
   - Einstellungen live änderbar (Lenkwinkel, Zentrierfeder, Gamma, Deadzones, Rumble …)
-  - Verkabelungsanleitung mit Diagramm, Log-Ansicht
+  - **Interaktive Verkabelungsanleitung:** Pi-4-Diagramm mit nummerierten Kabeln und einem Assistenten, der jeden Anschluss live abhakt
+  - Log-Ansicht
 - Lenkwinkel-Anschlag in Hardware über `lg4ff` (das Lenkrad stoppt physisch am Stick-Maximum)
 - H-Shifter → sequentielle Schaltpulse
 - Paket-Mitschnitt (`--sniff`) zur Protokoll-Fehlersuche
 - Nur Debian-Pakete: `python3-evdev`, `python3-usb`
 
-| Mapping | Anleitung |
-|---|---|
-| ![Mapping](docs/img/mapping.png) | ![Anleitung](docs/img/anleitung.png) |
+| Anleitung mit Live-Assistent | Mapping | Updates |
+|---|---|---|
+| ![Anleitung](docs/img/anleitung.png) | ![Mapping](docs/img/mapping.png) | ![Update](docs/img/update.png) |
 
 ## Verkabelung, kurz
 
@@ -86,7 +87,7 @@ Danach einmal neu starten, Lenkrad und Controller (ohne Akkus) an den Pi stecken
 wheelbridge doctor     # Systemcheck mit Lösungshinweisen
 wheelbridge logs       # Log live
 wheelbridge sniff      # Mitschnitt für Bug-Reports
-wheelbridge update     # aktualisieren (Konfiguration bleibt)
+wheelbridge update     # auf das neueste Release aktualisieren (geht auch im Dashboard)
 ```
 
 ## Konfiguration
@@ -100,10 +101,13 @@ wheelbridge update     # aktualisieren (Konfiguration bleibt)
 
 ## Offene Punkte
 
+**Getestet und funktionierend:** Raspberry Pi 4 · Raspberry Pi OS 13 (Trixie) · Xbox One X · Xbox-One-S-Controller (045e:02ea, FW 3.01) · Logitech G27. Die Xbox akzeptiert die vereinfachten USB-Descriptors, und der Auth-Handshake läuft vollständig über den echten Controller.
+
 | Punkt | Risiko | Klärung |
 |---|---|---|
-| USB-Descriptors: nur das GIP-Interface, ohne Audio/Bulk wie beim Original | Xbox bricht ggf. nach `IDENTIFY` ab | `wheelbridge probe --usb` + `wheelbridge sniff`, dann ggf. Interfaces ergänzen |
-| Sequenznummern der injizierten Reports | Trennung nach dem Handshake | Mitschnitt |
+| Andere Controller (Series X/S, Elite) | anderes Verhalten beim Handshake | Testbericht mit `wheelbridge sniff` |
+| Andere Lenkräder (G25, G29, DFGT) | andere Achsen und Knöpfe | Mapping-Assistent im Dashboard, Testbericht |
+| Xbox Series X/S als Konsole | ungetestet | Testbericht |
 | Microsoft blockiert per Firmware gelegentlich Zubehör | Funktion kann durch Updates brechen | Original-Controller als Auth-Partner nutzen |
 
 ## Projektstruktur
@@ -119,6 +123,7 @@ bridge/controller.py  echter Controller via libusb
 bridge/wheel.py       Lenkrad via evdev (Lenkwinkel, Autocenter, Konstantkraft)
 bridge/mapper.py      Lenkrad → Pad-Zustand, H-Shifter
 bridge/ffb.py         Rumble → Vibration
+bridge/updater.py     GitHub-Releases prüfen, Update anstoßen
 bridge/probe.py       Diagnose: Lenkrad-Codes, Controller-Descriptors
 install.sh            Installer (Install / Update / Uninstall, idempotent)
 scripts/wheelbridge   Kommandozeile
@@ -137,7 +142,11 @@ docs/                 Installation, Verkabelung, Screenshots, Branding
 | POST | `/api/config` | Teil-Patch (JSON), wird validiert, gespeichert und live übernommen |
 | POST | `/api/config/reset` | Overrides verwerfen |
 | POST | `/api/action/rumble` | Testvibration |
-| POST | `/api/action/reconnect` | Controller neu anmelden |
+| POST | `/api/action/reconnect` | Controller neu anmelden (GIP-Reset) |
+| GET | `/api/update` | Update-Status (installiert, neuestes Release, Release-Notes) |
+| POST | `/api/update/check` | jetzt auf GitHub prüfen |
+| POST | `/api/update/apply` | Update starten (`{"tag": "v0.4.0"}`) |
+| GET | `/api/update/log` | Protokoll des laufenden Updates |
 
 ## Branding
 
