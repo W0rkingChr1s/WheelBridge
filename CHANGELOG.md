@@ -4,6 +4,9 @@ Alle nennenswerten Änderungen an WheelBridge. Format nach [Keep a Changelog](ht
 
 ## [Unveröffentlicht]
 
+### Behoben
+- Installer und `doctor` werten `dtoverlay=dwc2` jetzt abschnittsweise aus. Die `config.txt` von Raspberry Pi OS 13 (Trixie) enthält standardmäßig `[cm5] dtoverlay=dwc2,dr_mode=host`. Das wurde fälschlich als „Overlay schon vorhanden“ erkannt, und der Gadget-Modus wurde nie aktiviert.
+
 ### Geplant
 - Erster Test an echter Xbox-Hardware, ggf. vollständige USB-Descriptors (Audio/Bulk-Interfaces)
 - Guide-Knopf auf das Lenkrad legen

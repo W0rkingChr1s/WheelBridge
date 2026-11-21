@@ -116,6 +116,14 @@ boot_config() {
   fi
 }
 
+# dwc2-Zeilen, die auf einem Pi 4 wirken: vor dem ersten Abschnitt sowie in [all] und [pi4].
+# Zeilen in [cm5], [pi5] usw. (Trixie-Standard: "[cm5] dtoverlay=dwc2,dr_mode=host") zählen nicht.
+dwc2_lines() {
+  awk 'BEGIN { active = 1 }
+       /^[[:space:]]*\[/ { s = tolower($0); gsub(/[][[:space:]]/, "", s); active = (s == "all" || s == "pi4"); next }
+       active && /^[[:space:]]*dtoverlay=dwc2/ { print }' "$1"
+}
+
 have_systemd() { [[ -d /run/systemd/system ]] && command -v systemctl >/dev/null; }
 
 # =============================================================================
@@ -264,10 +272,11 @@ setup_boot() {
   if [[ -z "$cfg" ]]; then
     warn "Übersprungen – keine Boot-Konfiguration"; return
   fi
+  local cur; cur="$(dwc2_lines "$cfg")"
   if grep -qF "$BOOT_MARK" "$cfg"; then
     ok "Overlay bereits eingetragen ($cfg)"
-  elif grep -qE '^[[:space:]]*dtoverlay=dwc2' "$cfg"; then
-    if grep -qE '^[[:space:]]*dtoverlay=dwc2.*dr_mode=peripheral' "$cfg"; then
+  elif [[ -n "$cur" ]]; then
+    if grep -q 'dr_mode=peripheral' <<<"$cur"; then
       ok "dwc2-Overlay bereits vorhanden ($cfg)"
     else
       warn "In $cfg steht bereits ein dwc2-Overlay ohne dr_mode=peripheral."

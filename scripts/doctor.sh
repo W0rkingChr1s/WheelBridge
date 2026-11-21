@@ -34,9 +34,13 @@ done
 
 section "USB-Gadget (Xbox-Seite)"
 cfg=/boot/firmware/config.txt; [[ -f $cfg ]] || cfg=/boot/config.txt
-if grep -qE '^[[:space:]]*dtoverlay=dwc2.*dr_mode=peripheral' "$cfg" 2>/dev/null; then
+# nur Zeilen, die auf dem Pi 4 wirken (vor dem ersten Abschnitt, [all], [pi4])
+dwc2="$(awk 'BEGIN { active = 1 }
+  /^[[:space:]]*\[/ { s = tolower($0); gsub(/[][[:space:]]/, "", s); active = (s == "all" || s == "pi4"); next }
+  active && /^[[:space:]]*dtoverlay=dwc2/ { print }' "$cfg" 2>/dev/null)"
+if grep -q 'dr_mode=peripheral' <<<"$dwc2"; then
   pass "dwc2-Overlay in $cfg"
-elif grep -qE '^[[:space:]]*dtoverlay=dwc2' "$cfg" 2>/dev/null; then
+elif [[ -n "$dwc2" ]]; then
   note "dwc2-Overlay ohne dr_mode=peripheral" "Zeile in $cfg ändern zu: dtoverlay=dwc2,dr_mode=peripheral"
 else
   fail "dwc2-Overlay fehlt" "Installer ausführen, dann sudo reboot"
